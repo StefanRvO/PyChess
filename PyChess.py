@@ -410,8 +410,8 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 					if not ([Field[0]+i,Field[1]+j] in thePlayer.Pieceplacement) and not (Field[0]+i>7 or Field[0]+i<0 or Field[1]+j>7 or Field[1]+j<0):
 						Moves.append([Field[0]+i,Field[1]+j])
 		#Hack To Eleminate some odd behavior This should be temporary
-		if Field in [[0,1],[1,1],[1,0]]:
-			Moves.append([0,0])
+		#if Field in [[0,1],[1,1],[1,0]]:
+		#	Moves.append([0,0])
 	if checkchess:
 		#print "CheckChess"
 		Moves2=[]					
