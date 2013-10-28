@@ -61,9 +61,10 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 					Moves.append([Field[0]+1,Field[1]+1])
 	elif Piece==15 or Piece==8: #Tower
 		pass #
-		#Check horisontal where the closest other piece is
-		i=1
+		#Check horisontal
+		i=0
 		while (Field[0]+i<=7):
+			i+=1
 			if not ([Field[0]+i,Field[1]] in thePlayer.Pieceplacement or [Field[0]+i,Field[1]] in theOpponent.Pieceplacement):
 				Moves.append([[Field[0]+i,Field[1]])
 			else:
@@ -73,7 +74,43 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 				else:
 					break
 				
-		i=
+		i=0
+		while (Field[0]+i>=0):
+			i-=1
+			if not ([Field[0]+i,Field[1]] in thePlayer.Pieceplacement or [Field[0]+i,Field[1]] in theOpponent.Pieceplacement):
+				Moves.append([[Field[0]+i,Field[1]])
+			else:
+				if [Field[0]+i,Field[1]] in theOpponent.Pieceplacement:
+					Moves.append([Field[0]+i,Field[1]])
+					break
+				else:
+					break
+		#Check Vertical
+		i=0
+		while (Field[1]+i<=7):
+			i+=1
+			if not ([Field[0],Field[1]+i] in thePlayer.Pieceplacement or [Field[0],Field[1]+i] in theOpponent.Pieceplacement):
+				Moves.append([[Field[0],Field[1]+i])
+			else:
+				if [Field[0]+i,Field[1]] in theOpponent.Pieceplacement:
+					Moves.append([Field[0],Field[1]+i])
+					break
+				else:
+					break
+				
+		i=0
+		while (Field[0]+i>=0):
+			i-=1
+			if not ([Field[0],Field[1]+i] in thePlayer.Pieceplacement or [Field[0],Field[1]+i] in theOpponent.Pieceplacement):
+				Moves.append([[Field[0],Field[1]+i])
+			else:
+				if [Field[0]+i,Field[1]] in theOpponent.Pieceplacement:
+					Moves.append([Field[0],Field[1]+i])
+					break
+				else:
+					break
+
+		
 	elif Piece==9 or Piece==14: #Horse
 		pass>>> 
 
