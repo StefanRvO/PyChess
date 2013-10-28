@@ -43,7 +43,83 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 		else:
 			if thePlayer.AlivePieces[Piece][1]==2: #check if transformed to queen
 				#Queenmoves
-				pass
+				#Combine Runner and Tower
+				for i in zip(range(Field[0]+1,8),range(Field[1]+1,8)):
+					i=[i[0],i[1]]
+					if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
+						Moves.append(i)
+					else:
+						if i in theOpponent.Pieceplacement:
+							Moves.append(i)
+							break
+						else:
+							break
+				for i in zip(range(Field[0]-1,-1,-1),range(Field[1]+1,8)):
+					i=[i[0],i[1]]
+					if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
+						Moves.append(i)
+					else:
+						if i in theOpponent.Pieceplacement:
+							Moves.append(i)
+							break
+						else:
+							break
+				for i in zip(range(Field[0]+1,8),range(Field[1]-1,-1,-1)):
+					i=[i[0],i[1]]
+					if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
+						Moves.append(i)
+					else:
+						if i in theOpponent.Pieceplacement:
+							Moves.append(i)
+							break
+						else:
+							break
+				for i in zip(range(Field[0]-1,-1,-1),range(Field[1]-1,-1,-1)):
+					i=[i[0],i[1]]
+					if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
+						Moves.append(i)
+					else:
+						if i in theOpponent.Pieceplacement:
+							Moves.append(i)
+							break
+						else:
+							break
+				#Check horisontal
+				i=0
+				while (Field[0]+i<=6):																													
+					i+=1
+					if not ([Field[0]+i,Field[1]] in thePlayer.Pieceplacement or [Field[0]+i,Field[1]] in theOpponent.Pieceplacement):
+						Moves.append([Field[0]+i,Field[1]])
+					else:
+						if [Field[0]+i,Field[1]] in theOpponent.Pieceplacement:
+							Moves.append([Field[0]+i,Field[1]])
+							break
+						else:
+							break
+						
+				i=0
+				while (Field[0]+i>=1):
+					i-=1
+					if not ([Field[0]+i,Field[1]] in thePlayer.Pieceplacement or [Field[0]+i,Field[1]] in theOpponent.Pieceplacement):
+						Moves.append([Field[0]+i,Field[1]])
+					else:
+						if [Field[0]+i,Field[1]] in theOpponent.Pieceplacement:
+							Moves.append([Field[0]+i,Field[1]])
+							break
+						else:
+							break
+				#Check Vertical
+				i=0
+				while (Field[1]+i<=6):
+					i+=1
+					if not ([Field[0],Field[1]+i] in thePlayer.Pieceplacement or [Field[0],Field[1]+i] in theOpponent.Pieceplacement):
+						Moves.append([Field[0],Field[1]+i])
+					else:
+						if [Field[0]+i,Field[1]] in theOpponent.Pieceplacement:
+							Moves.append([Field[0],Field[1]+i])
+							break
+						else:
+							break
 			if thePlayer.Playernr==2: #White
 				#Check if anything in front of piece
 				if not ([Field[0],Field[1]-1] in thePlayer.Pieceplacement  or [Field[0],Field[1]-1] in theOpponent.Pieceplacement):
@@ -119,12 +195,12 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 					continue
 				if abs(i)==abs(j):
 					continue
-				if not (Field[0]+i<0 or Field[0]+i>7 or Field[1]+j<0 or Field[1]+j>7 or [Field[0]+1,Field[1]+j] in thePlayer.Pieceplacement) :
+				if not (Field[0]+i<0 or Field[0]+i>7 or Field[1]+j<0 or Field[1]+j>7 or [Field[0]+i,Field[1]+j] in thePlayer.Pieceplacement) :
 					print (i,j)
 					Moves.append([Field[0]+i,Field[1]+j])
 
 	elif Piece==10 or Piece==13: #Runner
-		for i in zip(range(Field[0],8),range(Field[1],8)):
+		for i in zip(range(Field[0]+1,8),range(Field[1]+1,8)):
 			i=[i[0],i[1]]
 			if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
 				Moves.append(i)
@@ -134,7 +210,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 					break
 				else:
 					break
-		for i in zip(range(Field[0],-1,-1),range(Field[1],8)):
+		for i in zip(range(Field[0]-1,-1,-1),range(Field[1]+1,8)):
 			i=[i[0],i[1]]
 			if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
 				Moves.append(i)
@@ -144,7 +220,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 					break
 				else:
 					break
-		for i in zip(range(Field[0],8),range(Field[1],-1,-1)):
+		for i in zip(range(Field[0]+1,8),range(Field[1]-1,-1,-1)):
 			i=[i[0],i[1]]
 			if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
 				Moves.append(i)
@@ -154,7 +230,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 					break
 				else:
 					break
-		for i in zip(range(Field[0],-1,-1),range(Field[1],-1,-1)):
+		for i in zip(range(Field[0]-1,-1,-1),range(Field[1]-1,-1,-1)):
 			i=[i[0],i[1]]
 			if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
 				Moves.append(i)
@@ -167,7 +243,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 				
 	elif Piece==11: #Queen
 		#Combine Runner and Tower
-		for i in zip(range(Field[0],8),range(Field[1],8)):
+		for i in zip(range(Field[0]+1,8),range(Field[1]+1,8)):
 			i=[i[0],i[1]]
 			if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
 				Moves.append(i)
@@ -177,7 +253,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 					break
 				else:
 					break
-		for i in zip(range(Field[0],-1,-1),range(Field[1],8)):
+		for i in zip(range(Field[0]-1,-1,-1),range(Field[1]+1,8)):
 			i=[i[0],i[1]]
 			if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
 				Moves.append(i)
@@ -187,7 +263,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 					break
 				else:
 					break
-		for i in zip(range(Field[0],8),range(Field[1],-1,-1)):
+		for i in zip(range(Field[0]+1,8),range(Field[1]-1,-1,-1)):
 			i=[i[0],i[1]]
 			if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
 				Moves.append(i)
@@ -197,7 +273,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 					break
 				else:
 					break
-		for i in zip(range(Field[0],-1,-1),range(Field[1],-1,-1)):
+		for i in zip(range(Field[0]-1,-1,-1),range(Field[1]-1,-1,-1)):
 			i=[i[0],i[1]]
 			if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
 				Moves.append(i)
@@ -267,7 +343,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 	return Moves
 	
 def DrawPossibilities(Players,SelectedField,Possibilities):
-	print (Players,SelectedField,Possibilities)
+	#print (Players,SelectedField,Possibilities)
 	screen.fill(BACKGRUNDCOLOR)
 	#Color all the fields.
 	for i in range(8):
@@ -323,7 +399,10 @@ def DrawPieces(Players):
 		for i in range(16):
 			if not player.Pieceplacement[i]==[-1,-1]: #Don't draw if piece is dead
 				if i<8: #Pessant
-					Name="P"
+					if player.AlivePieces[i][1]==2: #Check if queen
+						Name="Q"
+					else:
+						Name="P"
 				elif i==8 or i==15: #Tower
 					Name="T"
 				elif i==9 or i ==14: #Horse
@@ -358,7 +437,7 @@ def EnterChossingLoop(Players,SelectedField,Possibilities):
 						Players[0].Pieceplacement[Piece]=PressedField
 						Players[0].AlivePieces[Piece][2]+=1 #Add 1 to number of moves
 						if Piece<8: #turn pessent into Queen if it reaces end
-							if PressedField[1]==7:
+							if PressedField[1]==7 or PressedField[1]==0:
 								if Players[0].AlivePieces[Piece][1]==1:
 									Players[0].AlivePieces[Piece][1]=2
 						if PressedField in Players[1].Pieceplacement: #Remove opponents player from alivelist and placement
