@@ -35,6 +35,11 @@ def CheckIfChess(Player,Opponent,FieldPair=0): #Checks if the Player is chess. I
 	if not FieldPair==0:
 		NewPlayer=copy.deepcopy(Player)
 		NewPlayer.Pieceplacement[NewPlayer.Pieceplacement.index(FieldPair[0])]=FieldPair[1]
+		NewOpponent=copy.deepcopy(Opponent)
+		if FieldPair[1] in NewOpponent.Pieceplacement:
+			Piece=NewOpponent.Pieceplacement.index(FieldPair[1])
+			NewOpponent.Pieceplacement[Piece]=[-1,-1]
+			NewOpponent.AlivePieces[Piece][1]=0
 	KingAlive=1
 	if FieldPair==0:
 		for i in range(16):
@@ -42,14 +47,30 @@ def CheckIfChess(Player,Opponent,FieldPair=0): #Checks if the Player is chess. I
 				KingAlive=0
 	else:
 		for i in range(16):
-			if NewPlayer.Pieceplacement[12] in FindPossibleMoves(Opponent.Pieceplacement[i],Opponent,NewPlayer,0):
+			if NewPlayer.Pieceplacement[12] in FindPossibleMoves(NewOpponent.Pieceplacement[i],NewOpponent,NewPlayer,0):
 				KingAlive=0
 	return not KingAlive
-
+def CheckIfChessMate(Player,Opponent): #Check if Player is Chessmate. Return 1 if chessmate, 2 if stalemate. else return 0
+	#Check if player can move any piece
+	canmove=0
+	for i in Player.Pieceplacement:
+		if len(FindPossibleMoves(i,Player,Opponent))>0:
+			canmove=1
+	if canmove:
+		return 0 #it is possible to make a move, thus the player is not checkmate
+	else:
+		#Check if we are stalemate
+		if CheckIfChess(Player,Opponent)==1:
+			#Checkmate
+			return 1
+		else:
+			return 2
 			
 		
 def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most of gamelogic and rules. Most bugs will probably be here.
 	Piece=thePlayer.Pieceplacement.index(Field)
+	if thePlayer.AlivePieces[Piece][1]==0:
+		return []
 	#print Piece
 	Moves=[]
 	if Piece<8: #This is a pessant
@@ -59,11 +80,19 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 					Moves.append([Field[0],Field[1]-1])
 					if not [Field[0],Field[1]-2] in theOpponent.Pieceplacement:
 						Moves.append([Field[0],Field[1]-2])
+				if [Field[0]+1,Field[1]-1] in theOpponent.Pieceplacement:
+					Moves.append([Field[0]+1,Field[1]-1])
+				if [Field[0]-1,Field[1]-1] in theOpponent.Pieceplacement:
+					Moves.append([Field[0]-1,Field[1]-1])
 			else:
 				if not [Field[0],Field[1]+1] in theOpponent.Pieceplacement:
 					Moves.append([Field[0],Field[1]+1])
 					if not [Field[0],Field[1]+2] in theOpponent.Pieceplacement:
 						Moves.append([Field[0],Field[1]+2])
+				if [Field[0]+1,Field[1]+1] in theOpponent.Pieceplacement:
+					Moves.append([Field[0]+1,Field[1]+1])
+				if [Field[0]-1,Field[1]+1] in theOpponent.Pieceplacement:
+					Moves.append([Field[0]-1,Field[1]+1])
 		else:
 			if thePlayer.AlivePieces[Piece][1]==2: #check if transformed to queen
 				#Queenmoves
@@ -380,15 +409,20 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 				else:
 					if not ([Field[0]+i,Field[1]+j] in thePlayer.Pieceplacement) and not (Field[0]+i>7 or Field[0]+i<0 or Field[1]+j>7 or Field[1]+j<0):
 						Moves.append([Field[0]+i,Field[1]+j])
+		#Hack To Eleminate some odd behavior This should be temporary
+		if Field in [[0,1],[1,1],[1,0]]:
+			Moves.append([0,0])
 	if checkchess:
-		print "CheckChess"
+		#print "CheckChess"
 		Moves2=[]					
 		for i in Moves:
 			if not CheckIfChess(thePlayer,theOpponent,(Field,i)):
 				Moves2.append(i)
-		print Moves
+		#print Moves
+		#print Moves2
 		print Moves2		
 		return Moves2
+	print Moves
 	return Moves
 	
 def DrawPossibilities(Players,SelectedField,Possibilities):
@@ -533,6 +567,11 @@ while 1: #Gameloop
 					PossibleMoves=FindPossibleMoves(SelectedField,White,Black)
 					DrawPossibilities([White,Black],SelectedField,PossibleMoves)
 					if(EnterChossingLoop([White,Black],SelectedField,PossibleMoves)==1):
+						CheckMateState=CheckIfChessMate(Black,White)
+						if CheckMateState==1: #Check if black is Chessmate
+							print "Black Is CheckMate"
+						elif CheckMateState==2:
+							print "StaleMate"
 						if Turn==1:
 							Turn=2
 						else:
@@ -542,6 +581,12 @@ while 1: #Gameloop
 					PossibleMoves=FindPossibleMoves(SelectedField,Black,White)
 					DrawPossibilities([White,Black],SelectedField,PossibleMoves)
 					if(EnterChossingLoop([White,Black],SelectedField,PossibleMoves)==1):
+						CheckMateState=CheckIfChessMate(White,Black)
+						if CheckMateState==1: #Check if White is Chessmate
+							print "White Is CheckMate"
+						elif CheckMateState==2:
+							print "StaleMate"
+							
 						if Turn==1:
 							Turn=2
 						else:
