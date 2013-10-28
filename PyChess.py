@@ -2,6 +2,7 @@
 import sys
 import pygame
 from pygame.locals import *
+import copy
 
 SCREENSIZE=(600,600)
 FONT="Times New Roman"
@@ -29,17 +30,40 @@ class Player:
 					self.Pieceplacement[j+i*8]=[j,i]
 			self.Pieceplacement=self.Pieceplacement[8:]+self.Pieceplacement[:8]	
 		
-					
-def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic and rules. Most bugs will probably be here.
+def CheckIfChess(Player,Opponent,FieldPair=0): #Checks if the Player is chess. If Fieldpair is provided, it will return the result for these shifted
+	#Check if any moves Opponent can make will be able to kill the king
+	if not FieldPair==0:
+		NewPlayer=copy.deepcopy(Player)
+		NewPlayer.Pieceplacement[NewPlayer.Pieceplacement.index(FieldPair[0])]=FieldPair[1]
+	KingAlive=1
+	if FieldPair==0:
+		for i in range(16):
+			if Player.Pieceplacement[12] in FindPossibleMoves(Opponent.Pieceplacement[i],Opponent,Player,0):
+				KingAlive=0
+	else:
+		for i in range(16):
+			if NewPlayer.Pieceplacement[12] in FindPossibleMoves(Opponent.Pieceplacement[i],Opponent,NewPlayer,0):
+				KingAlive=0
+	return not KingAlive
+
+			
+		
+def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most of gamelogic and rules. Most bugs will probably be here.
 	Piece=thePlayer.Pieceplacement.index(Field)
-	print Piece
+	#print Piece
 	Moves=[]
 	if Piece<8: #This is a pessant
 		if thePlayer.AlivePieces[Piece][2]==0: #First move for this piece
 			if thePlayer.Playernr==2: #White
-				return([Field[0],Field[1]-1],[Field[0],Field[1]-2])
+				if not [Field[0],Field[1]-1] in theOpponent.Pieceplacement:
+					Moves.append([Field[0],Field[1]-1])
+					if not [Field[0],Field[1]-2] in theOpponent.Pieceplacement:
+						Moves.append([Field[0],Field[1]-2])
 			else:
-				return([Field[0],Field[1]+1],[Field[0],Field[1]+2])
+				if not [Field[0],Field[1]+1] in theOpponent.Pieceplacement:
+					Moves.append([Field[0],Field[1]+1])
+					if not [Field[0],Field[1]+2] in theOpponent.Pieceplacement:
+						Moves.append([Field[0],Field[1]+2])
 		else:
 			if thePlayer.AlivePieces[Piece][1]==2: #check if transformed to queen
 				#Queenmoves
@@ -115,11 +139,26 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 					if not ([Field[0],Field[1]+i] in thePlayer.Pieceplacement or [Field[0],Field[1]+i] in theOpponent.Pieceplacement):
 						Moves.append([Field[0],Field[1]+i])
 					else:
-						if [Field[0]+i,Field[1]] in theOpponent.Pieceplacement:
+						if [Field[0],Field[1]+i] in theOpponent.Pieceplacement:
 							Moves.append([Field[0],Field[1]+i])
 							break
 						else:
 							break
+					
+				i=0
+				while (Field[1]+i>=1):
+					i-=1
+					if not ([Field[0],Field[1]+i] in thePlayer.Pieceplacement or [Field[0],Field[1]+i] in theOpponent.Pieceplacement):
+						Moves.append([Field[0],Field[1]+i])
+					else:
+						if [Field[0],Field[1]+i] in theOpponent.Pieceplacement:
+							Moves.append([Field[0],Field[1]+i])
+							break
+						else:
+							break
+	
+		
+							
 			if thePlayer.Playernr==2: #White
 				#Check if anything in front of piece
 				if not ([Field[0],Field[1]-1] in thePlayer.Pieceplacement  or [Field[0],Field[1]-1] in theOpponent.Pieceplacement):
@@ -167,7 +206,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 			if not ([Field[0],Field[1]+i] in thePlayer.Pieceplacement or [Field[0],Field[1]+i] in theOpponent.Pieceplacement):
 				Moves.append([Field[0],Field[1]+i])
 			else:
-				if [Field[0]+i,Field[1]] in theOpponent.Pieceplacement:
+				if [Field[0],Field[1]+i] in theOpponent.Pieceplacement:
 					Moves.append([Field[0],Field[1]+i])
 					break
 				else:
@@ -179,7 +218,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 			if not ([Field[0],Field[1]+i] in thePlayer.Pieceplacement or [Field[0],Field[1]+i] in theOpponent.Pieceplacement):
 				Moves.append([Field[0],Field[1]+i])
 			else:
-				if [Field[0]+i,Field[1]] in theOpponent.Pieceplacement:
+				if [Field[0],Field[1]+i] in theOpponent.Pieceplacement:
 					Moves.append([Field[0],Field[1]+i])
 					break
 				else:
@@ -196,7 +235,6 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 				if abs(i)==abs(j):
 					continue
 				if not (Field[0]+i<0 or Field[0]+i>7 or Field[1]+j<0 or Field[1]+j>7 or [Field[0]+i,Field[1]+j] in thePlayer.Pieceplacement) :
-					print (i,j)
 					Moves.append([Field[0]+i,Field[1]+j])
 
 	elif Piece==10 or Piece==13: #Runner
@@ -314,7 +352,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 			if not ([Field[0],Field[1]+i] in thePlayer.Pieceplacement or [Field[0],Field[1]+i] in theOpponent.Pieceplacement):
 				Moves.append([Field[0],Field[1]+i])
 			else:
-				if [Field[0]+i,Field[1]] in theOpponent.Pieceplacement:
+				if [Field[0],Field[1]+i] in theOpponent.Pieceplacement:
 					Moves.append([Field[0],Field[1]+i])
 					break
 				else:
@@ -326,11 +364,13 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 			if not ([Field[0],Field[1]+i] in thePlayer.Pieceplacement or [Field[0],Field[1]+i] in theOpponent.Pieceplacement):
 				Moves.append([Field[0],Field[1]+i])
 			else:
-				if [Field[0]+i,Field[1]] in theOpponent.Pieceplacement:
+				if [Field[0],Field[1]+i] in theOpponent.Pieceplacement:
 					Moves.append([Field[0],Field[1]+i])
 					break
 				else:
 					break
+
+		
 
 	elif Piece==12: #King
 		for i in range(-1,2):
@@ -340,6 +380,15 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 				else:
 					if not ([Field[0]+i,Field[1]+j] in thePlayer.Pieceplacement) and not (Field[0]+i>7 or Field[0]+i<0 or Field[1]+j>7 or Field[1]+j<0):
 						Moves.append([Field[0]+i,Field[1]+j])
+	if checkchess:
+		print "CheckChess"
+		Moves2=[]					
+		for i in Moves:
+			if not CheckIfChess(thePlayer,theOpponent,(Field,i)):
+				Moves2.append(i)
+		print Moves
+		print Moves2		
+		return Moves2
 	return Moves
 	
 def DrawPossibilities(Players,SelectedField,Possibilities):
