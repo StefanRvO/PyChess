@@ -180,7 +180,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 					if not ([Field[0],Field[1]+i] in thePlayer.Pieceplacement or [Field[0],Field[1]+i] in theOpponent.Pieceplacement):
 						Moves.append([Field[0],Field[1]+i])
 					else:
-						if [Field[0],Field[1]+i] in theOpponent.Pieceplacement:
+						if [Field[0],Field[1]+i] in theOpponent.Pieceplacement
 							Moves.append([Field[0],Field[1]+i])
 							break
 						else:
@@ -409,6 +409,12 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 				else:
 					if not ([Field[0]+i,Field[1]+j] in thePlayer.Pieceplacement) and not (Field[0]+i>7 or Field[0]+i<0 or Field[1]+j>7 or Field[1]+j<0):
 						Moves.append([Field[0]+i,Field[1]+j])
+#		if thePlayer.AlivePieces[12][2]==0 and (thePlayer.AlivePieces[8][2]==0 or thePlayer.AlivePieces[8][2]==0) and not CheckIfChess(thePlayer,theOpponent): 
+			#Check if right Castling is possible
+#			if thePlayer.AlivePieces[15][2]==0: #Tower has not moved
+#				if [ThePlayer.Pieceplacement[12][0],ThePlayer.Pieceplacement[12][1]]
+			#Check if right Castling is possible
+			#Check if left castling is possible
 		#Hack To Eleminate some odd behavior This should be temporary
 		#if Field in [[0,1],[1,1],[1,0]]:
 		#	Moves.append([0,0])
@@ -420,9 +426,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 				Moves2.append(i)
 		#print Moves
 		#print Moves2
-		print Moves2		
 		return Moves2
-	print Moves
 	return Moves
 	
 def DrawPossibilities(Players,SelectedField,Possibilities):
