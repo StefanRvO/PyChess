@@ -16,7 +16,7 @@ class Player:
 		self.AlivePieces=['']*16
 		for i in range(16):
 			self.AlivePieces[i]=[i,1,0] #list to hold which pieces are still alive. Third argument is moves. If second argument is two, piece is transformed to queen
-		if self.Playernr==1:
+		if self.Playernr==2:
 			self.Pieceplacement=['']*16
 			for i in range(6,8,1):
 				for j in range(8):
@@ -36,7 +36,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 	Moves=[]
 	if Piece<8: #This is a pessant
 		if thePlayer.AlivePieces[Piece][2]==0: #First move for this piece
-			if thePlayer.Playernr==1: #White
+			if thePlayer.Playernr==2: #White
 				return([Field[0],Field[1]-1],[Field[0],Field[1]-2])
 			else:
 				return([Field[0],Field[1]+1],[Field[0],Field[1]+2])
@@ -44,7 +44,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 			if thePlayer.AlivePieces[Piece][1]==2: #check if transformed to queen
 				#Queenmoves
 				pass
-			if the.Player.Playernr==1: #White
+			if thePlayer.Playernr==2: #White
 				#Check if anything in front of piece
 				if not ([Field[0],Field[1]-1] in thePlayer.Pieceplacement  or [Field[0],Field[1]-1] in theOpponent.Pieceplacement):
 					Moves.append([Field[0],Field[1]-1])
@@ -60,13 +60,12 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 				if [Field[0]+1,Field[1]+1] in theOpponent.Pieceplacement and  not Field[0]+1 >7:
 					Moves.append([Field[0]+1,Field[1]+1])
 	elif Piece==15 or Piece==8: #Tower
-		pass #
 		#Check horisontal
 		i=0
-		while (Field[0]+i<=7):
+		while (Field[0]+i<=6):																													
 			i+=1
 			if not ([Field[0]+i,Field[1]] in thePlayer.Pieceplacement or [Field[0]+i,Field[1]] in theOpponent.Pieceplacement):
-				Moves.append([[Field[0]+i,Field[1]])
+				Moves.append([Field[0]+i,Field[1]])
 			else:
 				if [Field[0]+i,Field[1]] in theOpponent.Pieceplacement:
 					Moves.append([Field[0]+i,Field[1]])
@@ -75,10 +74,10 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 					break
 				
 		i=0
-		while (Field[0]+i>=0):
+		while (Field[0]+i>=1):
 			i-=1
 			if not ([Field[0]+i,Field[1]] in thePlayer.Pieceplacement or [Field[0]+i,Field[1]] in theOpponent.Pieceplacement):
-				Moves.append([[Field[0]+i,Field[1]])
+				Moves.append([Field[0]+i,Field[1]])
 			else:
 				if [Field[0]+i,Field[1]] in theOpponent.Pieceplacement:
 					Moves.append([Field[0]+i,Field[1]])
@@ -87,10 +86,10 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 					break
 		#Check Vertical
 		i=0
-		while (Field[1]+i<=7):
+		while (Field[1]+i<=6):
 			i+=1
 			if not ([Field[0],Field[1]+i] in thePlayer.Pieceplacement or [Field[0],Field[1]+i] in theOpponent.Pieceplacement):
-				Moves.append([[Field[0],Field[1]+i])
+				Moves.append([Field[0],Field[1]+i])
 			else:
 				if [Field[0]+i,Field[1]] in theOpponent.Pieceplacement:
 					Moves.append([Field[0],Field[1]+i])
@@ -99,10 +98,10 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 					break
 				
 		i=0
-		while (Field[0]+i>=0):
+		while (Field[1]+i>=1):
 			i-=1
 			if not ([Field[0],Field[1]+i] in thePlayer.Pieceplacement or [Field[0],Field[1]+i] in theOpponent.Pieceplacement):
-				Moves.append([[Field[0],Field[1]+i])
+				Moves.append([Field[0],Field[1]+i])
 			else:
 				if [Field[0]+i,Field[1]] in theOpponent.Pieceplacement:
 					Moves.append([Field[0],Field[1]+i])
@@ -112,15 +111,193 @@ def FindPossibleMoves(Field,thePlayer,theOpponent): #Contains most of gamelogic 
 
 		
 	elif Piece==9 or Piece==14: #Horse
-		pass>>> 
+		for i in range(-2,3):
+			if i==0:
+				continue
+			for j in range(-2,3):
+				if j==0:
+					continue
+				if abs(i)==abs(j):
+					continue
+				if not (Field[0]+i<0 or Field[0]+i>7 or Field[1]+j<0 or Field[1]+j>7 or [Field[0]+1,Field[1]+j] in thePlayer.Pieceplacement) :
+					print (i,j)
+					Moves.append([Field[0]+i,Field[1]+j])
 
-	elif Piece==10 or Piece==13 #Runner
-		pass
+	elif Piece==10 or Piece==13: #Runner
+		for i in zip(range(Field[0],8),range(Field[1],8)):
+			i=[i[0],i[1]]
+			if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
+				Moves.append(i)
+			else:
+				if i in theOpponent.Pieceplacement:
+					Moves.append(i)
+					break
+				else:
+					break
+		for i in zip(range(Field[0],-1,-1),range(Field[1],8)):
+			i=[i[0],i[1]]
+			if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
+				Moves.append(i)
+			else:
+				if i in theOpponent.Pieceplacement:
+					Moves.append(i)
+					break
+				else:
+					break
+		for i in zip(range(Field[0],8),range(Field[1],-1,-1)):
+			i=[i[0],i[1]]
+			if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
+				Moves.append(i)
+			else:
+				if i in theOpponent.Pieceplacement:
+					Moves.append(i)
+					break
+				else:
+					break
+		for i in zip(range(Field[0],-1,-1),range(Field[1],-1,-1)):
+			i=[i[0],i[1]]
+			if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
+				Moves.append(i)
+			else:
+				if i in theOpponent.Pieceplacement:
+					Moves.append(i)
+					break
+				else:
+					break
+				
 	elif Piece==11: #Queen
-		pass
+		#Combine Runner and Tower
+		for i in zip(range(Field[0],8),range(Field[1],8)):
+			i=[i[0],i[1]]
+			if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
+				Moves.append(i)
+			else:
+				if i in theOpponent.Pieceplacement:
+					Moves.append(i)
+					break
+				else:
+					break
+		for i in zip(range(Field[0],-1,-1),range(Field[1],8)):
+			i=[i[0],i[1]]
+			if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
+				Moves.append(i)
+			else:
+				if i in theOpponent.Pieceplacement:
+					Moves.append(i)
+					break
+				else:
+					break
+		for i in zip(range(Field[0],8),range(Field[1],-1,-1)):
+			i=[i[0],i[1]]
+			if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
+				Moves.append(i)
+			else:
+				if i in theOpponent.Pieceplacement:
+					Moves.append(i)
+					break
+				else:
+					break
+		for i in zip(range(Field[0],-1,-1),range(Field[1],-1,-1)):
+			i=[i[0],i[1]]
+			if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
+				Moves.append(i)
+			else:
+				if i in theOpponent.Pieceplacement:
+					Moves.append(i)
+					break
+				else:
+					break
+		#Check horisontal
+		i=0
+		while (Field[0]+i<=6):																													
+			i+=1
+			if not ([Field[0]+i,Field[1]] in thePlayer.Pieceplacement or [Field[0]+i,Field[1]] in theOpponent.Pieceplacement):
+				Moves.append([Field[0]+i,Field[1]])
+			else:
+				if [Field[0]+i,Field[1]] in theOpponent.Pieceplacement:
+					Moves.append([Field[0]+i,Field[1]])
+					break
+				else:
+					break
+				
+		i=0
+		while (Field[0]+i>=1):
+			i-=1
+			if not ([Field[0]+i,Field[1]] in thePlayer.Pieceplacement or [Field[0]+i,Field[1]] in theOpponent.Pieceplacement):
+				Moves.append([Field[0]+i,Field[1]])
+			else:
+				if [Field[0]+i,Field[1]] in theOpponent.Pieceplacement:
+					Moves.append([Field[0]+i,Field[1]])
+					break
+				else:
+					break
+		#Check Vertical
+		i=0
+		while (Field[1]+i<=6):
+			i+=1
+			if not ([Field[0],Field[1]+i] in thePlayer.Pieceplacement or [Field[0],Field[1]+i] in theOpponent.Pieceplacement):
+				Moves.append([Field[0],Field[1]+i])
+			else:
+				if [Field[0]+i,Field[1]] in theOpponent.Pieceplacement:
+					Moves.append([Field[0],Field[1]+i])
+					break
+				else:
+					break
+				
+		i=0
+		while (Field[1]+i>=1):
+			i-=1
+			if not ([Field[0],Field[1]+i] in thePlayer.Pieceplacement or [Field[0],Field[1]+i] in theOpponent.Pieceplacement):
+				Moves.append([Field[0],Field[1]+i])
+			else:
+				if [Field[0]+i,Field[1]] in theOpponent.Pieceplacement:
+					Moves.append([Field[0],Field[1]+i])
+					break
+				else:
+					break
+
 	elif Piece==12: #King
-		pass
+		for i in range(-1,2):
+			for j in range(-1,2):
+				if i==0 and j==0:
+					continue
+				else:
+					if not ([Field[0]+i,Field[1]+j] in thePlayer.Pieceplacement) and not (Field[0]+i>7 or Field[0]+i<0 or Field[1]+j>7 or Field[1]+j<0):
+						Moves.append([Field[0]+i,Field[1]+j])
 	return Moves
+	
+def DrawPossibilities(Players,SelectedField,Possibilities):
+	print (Players,SelectedField,Possibilities)
+	screen.fill(BACKGRUNDCOLOR)
+	#Color all the fields.
+	for i in range(8):
+		if i%2==0:
+			for j in range(8):
+				if j%2==0:
+					pygame.draw.rect(screen,FIELDCOLORS[0],pygame.Rect((i*SCREENSIZE[0]/8,j*SCREENSIZE[1]/8),(SCREENSIZE[0],SCREENSIZE[1])))
+				else:
+					pygame.draw.rect(screen,FIELDCOLORS[1],pygame.Rect((i*SCREENSIZE[0]/8,j*SCREENSIZE[1]/8),(SCREENSIZE[0],SCREENSIZE[1])))					
+		else:
+			for j in range(8):
+				if j%2==0:
+					pygame.draw.rect(screen,FIELDCOLORS[1],pygame.Rect((i*SCREENSIZE[0]/8,j*SCREENSIZE[1]/8),(SCREENSIZE[0],SCREENSIZE[1])))
+				else:
+					pygame.draw.rect(screen,FIELDCOLORS[0],pygame.Rect((i*SCREENSIZE[0]/8,j*SCREENSIZE[1]/8),(SCREENSIZE[0],SCREENSIZE[1])))
+	#Color Selected field blue
+	pygame.draw.rect(screen,(0,0,125),pygame.Rect((SelectedField[0]*SCREENSIZE[0]/8,SelectedField[1]*SCREENSIZE[1]/8),(SCREENSIZE[0]/8,SCREENSIZE[1]/8)))
+	if SelectedField in Players[0].Pieceplacement: #Selected piece os in Players[0]
+		for Possibility in Possibilities:
+			if Possibility in Players[1].Pieceplacement: #Draw red if we can kill another players piece
+				pygame.draw.rect(screen,(125,0,0),pygame.Rect((Possibility[0]*SCREENSIZE[0]/8,Possibility[1]*SCREENSIZE[1]/8),(SCREENSIZE[0]/8,SCREENSIZE[1]/8)))
+			else: #Else green
+				pygame.draw.rect(screen,(0,125,0),pygame.Rect((Possibility[0]*SCREENSIZE[0]/8,Possibility[1]*SCREENSIZE[1]/8),(SCREENSIZE[0]/8,SCREENSIZE[1]/8)))
+	else:
+		for Possibility in Possibilities:
+			if Possibility in Players[0].Pieceplacement: #Draw red if we can kill another players piece
+				pygame.draw.rect(screen,(125,0,0),pygame.Rect((Possibility[0]*SCREENSIZE[0]/8,Possibility[1]*SCREENSIZE[1]/8),(SCREENSIZE[0]/8,SCREENSIZE[1]/8)))
+			else: #Else green
+				pygame.draw.rect(screen,(0,125,0),pygame.Rect((Possibility[0]*SCREENSIZE[0]/8,Possibility[1]*SCREENSIZE[1]/8),(SCREENSIZE[0]/8,SCREENSIZE[1]/8)))
+	DrawPieces(Players)
 
 def DrawBoard(Players): #Draw the chessboard
 	screen.fill(BACKGRUNDCOLOR)
@@ -138,28 +315,114 @@ def DrawBoard(Players): #Draw the chessboard
 					pygame.draw.rect(screen,FIELDCOLORS[1],pygame.Rect((i*SCREENSIZE[0]/8,j*SCREENSIZE[1]/8),(SCREENSIZE[0],SCREENSIZE[1])))
 				else:
 					pygame.draw.rect(screen,FIELDCOLORS[0],pygame.Rect((i*SCREENSIZE[0]/8,j*SCREENSIZE[1]/8),(SCREENSIZE[0],SCREENSIZE[1])))
-										
+	DrawPieces(Players)
 	pygame.display.flip()	
+	
+def DrawPieces(Players):
+	for player in Players:
+		for i in range(16):
+			if not player.Pieceplacement[i]==[-1,-1]: #Don't draw if piece is dead
+				if i<8: #Pessant
+					Name="P"
+				elif i==8 or i==15: #Tower
+					Name="T"
+				elif i==9 or i ==14: #Horse
+					Name="H"
+				elif i==10 or i==13: #Runner
+					Name="R"
+				elif i==11: #Queen
+					Name="Q"
+				elif i==12: #King
+					Name="K"
+				if player.Playernr==1:
+					text=font.render(Name,True,(0,0,0)) #White
+				else:
+					text=font.render(Name,True,(255,255,255))
+				screen.blit(text,(int(float(SCREENSIZE[0])/8*((player.Pieceplacement[i][0])+0.5)-text.get_width() / 2),int(float(SCREENSIZE[1])/8*((player.Pieceplacement[i][1])+0.5)-text.get_height() / 2)))
+	pygame.display.flip()
+	
+def EnterChossingLoop(Players,SelectedField,Possibilities):
+	while 1: #Loop till player have choosen.
+		for event in pygame.event.get(): #Event	quoue
+			if event.type==QUIT:																																													
+				sys.exit()
+			elif event.type == pygame.MOUSEBUTTONDOWN:
+				if event.button==1:
+					PressedField=[int(float(event.pos[0])/SCREENSIZE[0]*8),int(float(event.pos[1])/SCREENSIZE[1]*8)]
+					if PressedField==SelectedField:
+						return 0
+					if not PressedField in Possibilities:
+						continue
+					if SelectedField in Players[0].Pieceplacement:
+						Piece=Players[0].Pieceplacement.index(SelectedField)
+						Players[0].Pieceplacement[Piece]=PressedField
+						Players[0].AlivePieces[Piece][2]+=1 #Add 1 to number of moves
+						if Piece<8: #turn pessent into Queen if it reaces end
+							if PressedField[1]==7:
+								if Players[0].AlivePieces[Piece][1]==1:
+									Players[0].AlivePieces[Piece][1]=2
+						if PressedField in Players[1].Pieceplacement: #Remove opponents player from alivelist and placement
+							Piece=Players[1].Pieceplacement.index(PressedField)
+							Players[1].Pieceplacement[Piece]=[-1,-1]
+							Players[1].AlivePieces[Piece][1]=0
+						return 1
+					else:
+						Piece=Players[1].Pieceplacement.index(SelectedField)
+						Players[1].Pieceplacement[Piece]=PressedField
+						Players[1].AlivePieces[Piece][2]+=1 #Add 1 to number of moves
+						if Piece<8: #turn pessent into Queen if it reaces end
+							if PressedField[1]==7:
+								if Players[1].AlivePieces[Piece][1]==1:
+									Players[1].AlivePieces[Piece][1]=2
+						if PressedField in Players[0].Pieceplacement: #Remove opponents player from alivelist and placement
+							Piece=Players[0].Pieceplacement.index(PressedField)
+							Players[0].Pieceplacement[Piece]=[-1,-1]
+							Players[0].AlivePieces[Piece][1]=0
+						return 1
+
 pygame.init()
 screen=pygame.display.set_mode(SCREENSIZE,0,32)
 pygame.display.set_caption("PyChess", "PyCs") #Set title
-White=Player(1)
-Black=Player(2)
+if SCREENSIZE[0] > SCREENSIZE[1]:
+    FONTBASIS = SCREENSIZE[1]
+else:
+    FONTBASIS = SCREENSIZE[0]
+font = pygame.font.SysFont(FONT, int(float(FONTBASIS)/12))
+White=Player(2)
+Black=Player(1																																																									)
 clock=pygame.time.Clock()
 DrawBoard([White,Black])
-Turn=2
+Turn=1
 while 1: #Gameloop
 	for event in pygame.event.get(): #Event	quoue
-		if event.type==QUIT:
+		if event.type==QUIT:																																													
 			sys.exit()
 		elif event.type == pygame.MOUSEBUTTONDOWN:
 			if event.button==1:
 				#check if clicked field contains a piece
 				SelectedField=[int(float(event.pos[0])/SCREENSIZE[0]*8),int(float(event.pos[1])/SCREENSIZE[1]*8)]
 				if Turn==1 and SelectedField in White.Pieceplacement:
-					FindPossibleMoves(SelectedField,White,Black)
+					PossibleMoves=FindPossibleMoves(SelectedField,White,Black)
+					DrawPossibilities([White,Black],SelectedField,PossibleMoves)
+					if(EnterChossingLoop([White,Black],SelectedField,PossibleMoves)==1):
+						if Turn==1:
+							Turn=2
+						else:
+							Turn=1
+					
 				elif Turn==2 and SelectedField in Black.Pieceplacement:
-					FindPossibleMoves(SelectedField,Black,White)
+					PossibleMoves=FindPossibleMoves(SelectedField,Black,White)
+					DrawPossibilities([White,Black],SelectedField,PossibleMoves)
+					if(EnterChossingLoop([White,Black],SelectedField,PossibleMoves)==1):
+						if Turn==1:
+							Turn=2
+						else:
+							Turn=1
+							
+	DrawBoard([White,Black])
+			
+	
+				
 					
 					
 	clock.tick(60)
