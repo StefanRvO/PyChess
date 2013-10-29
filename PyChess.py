@@ -33,9 +33,15 @@ class Player:
 def CheckIfChess(Player,Opponent,FieldPair=0): #Checks if the Player is chess. If Fieldpair is provided, it will return the result for these shifted
 	#Check if any moves Opponent can make will be able to kill the king
 	if not FieldPair==0:
-		NewPlayer=copy.deepcopy(Player)
-		NewPlayer.Pieceplacement[NewPlayer.Pieceplacement.index(FieldPair[0])]=FieldPair[1]
-		NewOpponent=copy.deepcopy(Opponent)
+		if len(FieldPair)==2:
+			NewPlayer=copy.deepcopy(Player)
+			NewPlayer.Pieceplacement[NewPlayer.Pieceplacement.index(FieldPair[0])]=FieldPair[1]
+			NewOpponent=copy.deepcopy(Opponent)
+		elif len(FieldPair)==4:
+			NewPlayer=copy.deepcopy(Player)
+			NewPlayer.Pieceplacement[NewPlayer.Pieceplacement.index(FieldPair[0])]=FieldPair[1]
+			NewPlayer.Pieceplacement[NewPlayer.Pieceplacement.index(FieldPair[2])]=FieldPair[3]			
+			NewOpponent=copy.deepcopy(Opponent)
 		if FieldPair[1] in NewOpponent.Pieceplacement:
 			Piece=NewOpponent.Pieceplacement.index(FieldPair[1])
 			NewOpponent.Pieceplacement[Piece]=[-1,-1]
@@ -76,18 +82,18 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 	if Piece<8: #This is a pessant
 		if thePlayer.AlivePieces[Piece][2]==0: #First move for this piece
 			if thePlayer.Playernr==2: #White
-				if not [Field[0],Field[1]-1] in theOpponent.Pieceplacement:
+				if not [Field[0],Field[1]-1] in theOpponent.Pieceplacement+thePlayer.Pieceplacement:
 					Moves.append([Field[0],Field[1]-1])
-					if not [Field[0],Field[1]-2] in theOpponent.Pieceplacement:
+					if not [Field[0],Field[1]-2] in theOpponent.Pieceplacement+thePlayer.Pieceplacement:
 						Moves.append([Field[0],Field[1]-2])
 				if [Field[0]+1,Field[1]-1] in theOpponent.Pieceplacement:
 					Moves.append([Field[0]+1,Field[1]-1])
 				if [Field[0]-1,Field[1]-1] in theOpponent.Pieceplacement:
 					Moves.append([Field[0]-1,Field[1]-1])
 			else:
-				if not [Field[0],Field[1]+1] in theOpponent.Pieceplacement:
+				if not [Field[0],Field[1]+1] in theOpponent.Pieceplacement+thePlayer.Pieceplacement:
 					Moves.append([Field[0],Field[1]+1])
-					if not [Field[0],Field[1]+2] in theOpponent.Pieceplacement:
+					if not [Field[0],Field[1]+2] in theOpponent.Pieceplacement+thePlayer.Pieceplacement:
 						Moves.append([Field[0],Field[1]+2])
 				if [Field[0]+1,Field[1]+1] in theOpponent.Pieceplacement:
 					Moves.append([Field[0]+1,Field[1]+1])
@@ -180,7 +186,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 					if not ([Field[0],Field[1]+i] in thePlayer.Pieceplacement or [Field[0],Field[1]+i] in theOpponent.Pieceplacement):
 						Moves.append([Field[0],Field[1]+i])
 					else:
-						if [Field[0],Field[1]+i] in theOpponent.Pieceplacement
+						if [Field[0],Field[1]+i] in theOpponent.Pieceplacement:
 							Moves.append([Field[0],Field[1]+i])
 							break
 						else:
@@ -409,15 +415,24 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 				else:
 					if not ([Field[0]+i,Field[1]+j] in thePlayer.Pieceplacement) and not (Field[0]+i>7 or Field[0]+i<0 or Field[1]+j>7 or Field[1]+j<0):
 						Moves.append([Field[0]+i,Field[1]+j])
-#		if thePlayer.AlivePieces[12][2]==0 and (thePlayer.AlivePieces[8][2]==0 or thePlayer.AlivePieces[8][2]==0) and not CheckIfChess(thePlayer,theOpponent): 
-			#Check if right Castling is possible
-#			if thePlayer.AlivePieces[15][2]==0: #Tower has not moved
-#				if [ThePlayer.Pieceplacement[12][0],ThePlayer.Pieceplacement[12][1]]
-			#Check if right Castling is possible
+		
+		#Castling!!
+		if checkchess:
+			if thePlayer.AlivePieces[12][2]==0 and (thePlayer.AlivePieces[8][2]==0 or thePlayer.AlivePieces[8][2]==0) and not CheckIfChess(thePlayer,theOpponent): 
+				#Check if right Castling is possible
+				if thePlayer.AlivePieces[15][2]==0: #Right Tower has not moved
+					if not ([thePlayer.Pieceplacement[12][0]+1,thePlayer.Pieceplacement[12][1]] in thePlayer.Pieceplacement+theOpponent.Pieceplacement or [thePlayer.Pieceplacement[12][0]+2,thePlayer.Pieceplacement[12][1]] in thePlayer.Pieceplacement+theOpponent.Pieceplacement): #Fields between king and tower is empty
+						if not (CheckIfChess(thePlayer,theOpponent) or CheckIfChess(thePlayer,theOpponent,[[thePlayer.Pieceplacement[12][0],thePlayer.Pieceplacement[12][1]],[thePlayer.Pieceplacement[12][0]+1,thePlayer.Pieceplacement[12][1]]]) or CheckIfChess(thePlayer,theOpponent,[[thePlayer.Pieceplacement[12][0],thePlayer.Pieceplacement[12][1]],[thePlayer.Pieceplacement[12][0]+2,thePlayer.Pieceplacement[12][1]]])): #the king does not pass through attacked fields
+							if not CheckIfChess(thePlayer,theOpponent,[[thePlayer.Pieceplacement[12][0],thePlayer.Pieceplacement[12][1]],[thePlayer.Pieceplacement[12][0]+2,thePlayer.Pieceplacement[12][1]],[thePlayer.Pieceplacement[15][0],thePlayer.Pieceplacement[15][1]],[thePlayer.Pieceplacement[15][0]-2,thePlayer.Pieceplacement[15][1]]]):
+								Moves.append([thePlayer.Pieceplacement[15][0],thePlayer.Pieceplacement[15][1]])
+				#Check if left Castling is possible
+				if thePlayer.AlivePieces[8][2]==0: #Right Tower has not moved
+					if not ([thePlayer.Pieceplacement[12][0]-1,thePlayer.Pieceplacement[12][1]] in thePlayer.Pieceplacement+theOpponent.Pieceplacement or [thePlayer.Pieceplacement[12][0]-2,thePlayer.Pieceplacement[12][1]] in thePlayer.Pieceplacement+theOpponent.Pieceplacement or [thePlayer.Pieceplacement[12][0]-3,thePlayer.Pieceplacement[12][1]] in thePlayer.Pieceplacement+theOpponent.Pieceplacement): #Fields between king and tower is empty
+						if not (CheckIfChess(thePlayer,theOpponent) or CheckIfChess(thePlayer,theOpponent,[[thePlayer.Pieceplacement[12][0],thePlayer.Pieceplacement[12][1]],[thePlayer.Pieceplacement[12][0]-1,thePlayer.Pieceplacement[12][1]]]) or CheckIfChess(thePlayer,theOpponent,[[thePlayer.Pieceplacement[12][0],thePlayer.Pieceplacement[12][1]],[thePlayer.Pieceplacement[12][0]-2,thePlayer.Pieceplacement[12][1]]])): #the king does not pass through attacked fields
+							if not CheckIfChess(thePlayer,theOpponent,[[thePlayer.Pieceplacement[12][0],thePlayer.Pieceplacement[12][1]],[thePlayer.Pieceplacement[12][0]-2,thePlayer.Pieceplacement[12][1]],[thePlayer.Pieceplacement[8][0],thePlayer.Pieceplacement[8][1]],[thePlayer.Pieceplacement[8][0]+3,thePlayer.Pieceplacement[8][1]]]):
+								Moves.append([thePlayer.Pieceplacement[8][0],thePlayer.Pieceplacement[8][1]])
+					
 			#Check if left castling is possible
-		#Hack To Eleminate some odd behavior This should be temporary
-		#if Field in [[0,1],[1,1],[1,0]]:
-		#	Moves.append([0,0])
 	if checkchess:
 		#print "CheckChess"
 		Moves2=[]					
@@ -521,6 +536,21 @@ def EnterChossingLoop(Players,SelectedField,Possibilities):
 						continue
 					if SelectedField in Players[0].Pieceplacement:
 						Piece=Players[0].Pieceplacement.index(SelectedField)
+						if Piece==12 and (Players[0].Pieceplacement.index(PressedField)==8 or Players[0].Pieceplacement.index(PressedField)==15): #Castling is chosen
+							if Players[0].Pieceplacement.index(PressedField)==8: #left castling
+								print "testing"
+								Players[0].Pieceplacement[12]=[Players[0].Pieceplacement[12][0]-2,Players[0].Pieceplacement[12][1]]
+								Players[0].Pieceplacement[8]=[Players[0].Pieceplacement[8][0]+3,Players[0].Pieceplacement[8][1]]
+								Players[0].AlivePieces[12][2]+=1
+								Players[0].AlivePieces[8][2]+=1
+								return 1	
+							if Players[0].Pieceplacement.index(PressedField)==15: #right castling
+								Players[0].Pieceplacement[12]=[Players[0].Pieceplacement[12][0]+2,Players[0].Pieceplacement[12][1]]
+								Players[0].Pieceplacement[15]=[Players[0].Pieceplacement[15][0]-2,Players[0].Pieceplacement[15][1]]
+								Players[0].AlivePieces[12][2]+=1
+								Players[0].AlivePieces[15][2]+=1
+								return 1
+											
 						Players[0].Pieceplacement[Piece]=PressedField
 						Players[0].AlivePieces[Piece][2]+=1 #Add 1 to number of moves
 						if Piece<8: #turn pessent into Queen if it reaces end
@@ -584,7 +614,7 @@ while 1: #Gameloop
 				elif Turn==2 and SelectedField in Black.Pieceplacement:
 					PossibleMoves=FindPossibleMoves(SelectedField,Black,White)
 					DrawPossibilities([White,Black],SelectedField,PossibleMoves)
-					if(EnterChossingLoop([White,Black],SelectedField,PossibleMoves)==1):
+					if(EnterChossingLoop([Black,White],SelectedField,PossibleMoves)==1):
 						CheckMateState=CheckIfChessMate(White,Black)
 						if CheckMateState==1: #Check if White is Chessmate
 							print "White Is CheckMate"
