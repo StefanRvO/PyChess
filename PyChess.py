@@ -536,9 +536,8 @@ def EnterChossingLoop(Players,SelectedField,Possibilities):
 						continue
 					if SelectedField in Players[0].Pieceplacement:
 						Piece=Players[0].Pieceplacement.index(SelectedField)
-						if Piece==12 and (Players[0].Pieceplacement.index(PressedField)==8 or Players[0].Pieceplacement.index(PressedField)==15): #Castling is chosen
+						if Piece==12 and (PressedField in Players[0].Pieceplacement): #Castling is chosen
 							if Players[0].Pieceplacement.index(PressedField)==8: #left castling
-								print "testing"
 								Players[0].Pieceplacement[12]=[Players[0].Pieceplacement[12][0]-2,Players[0].Pieceplacement[12][1]]
 								Players[0].Pieceplacement[8]=[Players[0].Pieceplacement[8][0]+3,Players[0].Pieceplacement[8][1]]
 								Players[0].AlivePieces[12][2]+=1
