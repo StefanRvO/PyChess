@@ -22,14 +22,14 @@ class Player:
 			for i in range(6,8,1):
 				for j in range(8):
 					self.Pieceplacement[j+(i-6)*8]=[j,i]
-			
+
 		else:
 			self.Pieceplacement=['']*16
 			for i in range(2):
 				for j in range(8):
 					self.Pieceplacement[j+i*8]=[j,i]
-			self.Pieceplacement=self.Pieceplacement[8:]+self.Pieceplacement[:8]	
-		
+			self.Pieceplacement=self.Pieceplacement[8:]+self.Pieceplacement[:8]
+
 def CheckIfChess(Player,Opponent,FieldPair=0): #Checks if the Player is chess. If Fieldpair is provided, it will return the result for these shifted
 	#Check if any moves Opponent can make will be able to kill the king
 	if not FieldPair==0:
@@ -40,7 +40,7 @@ def CheckIfChess(Player,Opponent,FieldPair=0): #Checks if the Player is chess. I
 		elif len(FieldPair)==4:
 			NewPlayer=copy.deepcopy(Player)
 			NewPlayer.Pieceplacement[NewPlayer.Pieceplacement.index(FieldPair[0])]=FieldPair[1]
-			NewPlayer.Pieceplacement[NewPlayer.Pieceplacement.index(FieldPair[2])]=FieldPair[3]			
+			NewPlayer.Pieceplacement[NewPlayer.Pieceplacement.index(FieldPair[2])]=FieldPair[3]
 			NewOpponent=copy.deepcopy(Opponent)
 		if FieldPair[1] in NewOpponent.Pieceplacement:
 			Piece=NewOpponent.Pieceplacement.index(FieldPair[1])
@@ -71,9 +71,9 @@ def CheckIfChessMate(Player,Opponent): #Check if Player is Chessmate. Return 1 i
 			return 1
 		else:
 			return 2
-			
-		
-def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most of gamelogic and rules. Most bugs will probably be here.
+
+
+def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1, Piece = -1): #Contains most of gamelogic and rules. Most bugs will probably be here.
 	Piece=thePlayer.Pieceplacement.index(Field)
 	if thePlayer.AlivePieces[Piece][1]==0:
 		return []
@@ -145,7 +145,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 							break
 				#Check horisontal
 				i=0
-				while (Field[0]+i<=6):																													
+				while (Field[0]+i<=6):
 					i+=1
 					if not ([Field[0]+i,Field[1]] in thePlayer.Pieceplacement or [Field[0]+i,Field[1]] in theOpponent.Pieceplacement):
 						Moves.append([Field[0]+i,Field[1]])
@@ -155,7 +155,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 							break
 						else:
 							break
-						
+
 				i=0
 				while (Field[0]+i>=1):
 					i-=1
@@ -179,7 +179,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 							break
 						else:
 							break
-					
+
 				i=0
 				while (Field[1]+i>=1):
 					i-=1
@@ -191,9 +191,9 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 							break
 						else:
 							break
-	
-		
-							
+
+
+
 			if thePlayer.Playernr==2: #White
 				#Check if anything in front of piece
 				if not ([Field[0],Field[1]-1] in thePlayer.Pieceplacement  or [Field[0],Field[1]-1] in theOpponent.Pieceplacement):
@@ -212,7 +212,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 	elif Piece==15 or Piece==8: #Tower
 		#Check horisontal
 		i=0
-		while (Field[0]+i<=6):																													
+		while (Field[0]+i<=6):
 			i+=1
 			if not ([Field[0]+i,Field[1]] in thePlayer.Pieceplacement or [Field[0]+i,Field[1]] in theOpponent.Pieceplacement):
 				Moves.append([Field[0]+i,Field[1]])
@@ -222,7 +222,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 					break
 				else:
 					break
-				
+
 		i=0
 		while (Field[0]+i>=1):
 			i-=1
@@ -246,7 +246,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 					break
 				else:
 					break
-				
+
 		i=0
 		while (Field[1]+i>=1):
 			i-=1
@@ -259,7 +259,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 				else:
 					break
 
-		
+
 	elif Piece==9 or Piece==14: #Horse
 		for i in range(-2,3):
 			if i==0:
@@ -313,7 +313,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 					break
 				else:
 					break
-				
+
 	elif Piece==11: #Queen
 		#Combine Runner and Tower
 		for i in zip(range(Field[0]+1,8),range(Field[1]+1,8)):
@@ -358,7 +358,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 					break
 		#Check horisontal
 		i=0
-		while (Field[0]+i<=6):																													
+		while (Field[0]+i<=6):
 			i+=1
 			if not ([Field[0]+i,Field[1]] in thePlayer.Pieceplacement or [Field[0]+i,Field[1]] in theOpponent.Pieceplacement):
 				Moves.append([Field[0]+i,Field[1]])
@@ -368,7 +368,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 					break
 				else:
 					break
-				
+
 		i=0
 		while (Field[0]+i>=1):
 			i-=1
@@ -392,7 +392,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 					break
 				else:
 					break
-				
+
 		i=0
 		while (Field[1]+i>=1):
 			i-=1
@@ -405,7 +405,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 				else:
 					break
 
-		
+
 
 	elif Piece==12: #King
 		for i in range(-1,2):
@@ -415,10 +415,10 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 				else:
 					if not ([Field[0]+i,Field[1]+j] in thePlayer.Pieceplacement) and not (Field[0]+i>7 or Field[0]+i<0 or Field[1]+j>7 or Field[1]+j<0):
 						Moves.append([Field[0]+i,Field[1]+j])
-		
+
 		#Castling!!
 		if checkchess:
-			if thePlayer.AlivePieces[12][2]==0 and (thePlayer.AlivePieces[8][2]==0 or thePlayer.AlivePieces[8][2]==0) and not CheckIfChess(thePlayer,theOpponent): 
+			if thePlayer.AlivePieces[12][2]==0 and (thePlayer.AlivePieces[8][2]==0 or thePlayer.AlivePieces[8][2]==0) and not CheckIfChess(thePlayer,theOpponent):
 				#Check if right Castling is possible
 				if thePlayer.AlivePieces[15][2]==0: #Right Tower has not moved
 					if not ([thePlayer.Pieceplacement[12][0]+1,thePlayer.Pieceplacement[12][1]] in thePlayer.Pieceplacement+theOpponent.Pieceplacement or [thePlayer.Pieceplacement[12][0]+2,thePlayer.Pieceplacement[12][1]] in thePlayer.Pieceplacement+theOpponent.Pieceplacement): #Fields between king and tower is empty
@@ -431,11 +431,11 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 						if not (CheckIfChess(thePlayer,theOpponent) or CheckIfChess(thePlayer,theOpponent,[[thePlayer.Pieceplacement[12][0],thePlayer.Pieceplacement[12][1]],[thePlayer.Pieceplacement[12][0]-1,thePlayer.Pieceplacement[12][1]]]) or CheckIfChess(thePlayer,theOpponent,[[thePlayer.Pieceplacement[12][0],thePlayer.Pieceplacement[12][1]],[thePlayer.Pieceplacement[12][0]-2,thePlayer.Pieceplacement[12][1]]])): #the king does not pass through attacked fields
 							if not CheckIfChess(thePlayer,theOpponent,[[thePlayer.Pieceplacement[12][0],thePlayer.Pieceplacement[12][1]],[thePlayer.Pieceplacement[12][0]-2,thePlayer.Pieceplacement[12][1]],[thePlayer.Pieceplacement[8][0],thePlayer.Pieceplacement[8][1]],[thePlayer.Pieceplacement[8][0]+3,thePlayer.Pieceplacement[8][1]]]):
 								Moves.append([thePlayer.Pieceplacement[8][0],thePlayer.Pieceplacement[8][1]])
-					
+
 			#Check if left castling is possible
 	if checkchess:
 		#print "CheckChess"
-		Moves2=[]					
+		Moves2=[]
 		for i in Moves:
 			if not CheckIfChess(thePlayer,theOpponent,(Field,i)):
 				Moves2.append(i)
@@ -443,7 +443,119 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1): #Contains most 
 		#print Moves2
 		return Moves2
 	return Moves
-	
+
+def doubledPawns(Player):
+  Doubled = 0
+  for i in range(8):
+    isDoubled = 0
+    if Player.AlivePieces[i][1] == 0:
+      continue
+    for j in range(i + 1, 8):
+      if(Player.AlivePieces[j][1]):
+        if Player.Pieceplacement[j][0] == Player.Pieceplacement[i][0]:
+          isDoubled = 1
+          break
+    if(isDoubled):
+      Doubled += 1
+  return Doubled
+        
+def blockedPawns(Players, SelectedPlayer):
+  Blocked = 0
+  for i in range(8):
+    isBlocked = 0
+    if Players[0].AlivePieces[i][1] == 0:
+      continue
+     
+    for j in range(16):
+      if(Players[0].AlivePieces[j][1] and j != i):
+        if SelectedPlayer == 1: #White
+          if(Players[0].Pieceplacement[i][0] == Players[0].Pieceplacement[j][0] and Players[0].Pieceplacement[i][1] == Players[0].Pieceplacement[j][1] + 1):
+            isBlocked = 1
+            break
+        else: #Black
+          if(Players[0].Pieceplacement[i][0] == Players[0].Pieceplacement[j][0] and Players[0].Pieceplacement[i][1] == Players[0].Pieceplacement[j][1] - 1):
+            isBlocked = 1
+            break
+      if(Players[1].AlivePieces[j][1]):
+        if SelectedPlayer == 1: #White
+          if(Players[0].Pieceplacement[i][0] == Players[1].Pieceplacement[j][0] and Players[0].Pieceplacement[i][1] == Players[1].Pieceplacement[j][1] + 1):
+            isBlocked = 1
+            break
+        else: #Black
+          if(Players[0].Pieceplacement[i][0] == Players[1].Pieceplacement[j][0] and Players[0].Pieceplacement[i][1] == Players[1].Pieceplacement[j][1] - 1):
+            isBlocked = 1
+            break
+    if(isBlocked):
+      Blocked += 1
+  return Blocked
+  
+def issolatedPawns(Player):
+  issolated = 0
+  for i in range(8):
+    isIssolated = 1
+    if Player.AlivePieces[i][1] == 0:
+      continue
+    for j in range(8):
+      if(Player.AlivePieces[j][1] and i != j):
+        if Player.Pieceplacement[i][0] == Player.Pieceplacement[j][0] + 1 or Player.Pieceplacement[i][0] == Player.Pieceplacement[j][0] - 1:
+          isIssolated = 0
+          break
+    if( isIssolated):
+      issolated += 1
+  return issolated
+
+def PawnScore(Players, SelectedPlayer):
+  Score = issolatedPawns(Players[0])
+  Score += blockedPawns(Players, SelectedPlayer)
+  Score += doubledPawns(Players[0])
+  return Score
+  
+def isAlive(AlivePieces, List):
+  count = 0
+  for i in List:
+    if AlivePieces[i][1]:
+      count += 1
+  return count
+  
+def evaluate(Players, SelectedPlayer): #first player in list should be white, next should be black
+  #Calculate score from alive pieces
+  Score = 0
+  for i in range(8):
+    if Players[0].AlivePieces[i][1] == 1:
+      Score += 1
+    elif Players[0].AlivePieces[i][1] == 2:
+      Score += 9
+    if Players[1].AlivePieces[i][1] == 1:
+      Score -= 1
+    elif Players[1].AlivePieces[i][1] == 2:
+      Score -= 1
+      
+  Score += 5 * isAlive(Players[0].AlivePieces, [8, 15])
+  Score -= 5 * isAlive(Players[1].AlivePieces, [8, 15])
+
+  Score += 3 * isAlive(Players[0].AlivePieces, [9, 10, 13, 14])
+  Score -= 3 * isAlive(Players[1].AlivePieces, [9, 10, 13, 14])
+
+  Score += 200 * isAlive(Players[0].AlivePieces, [12])
+  Score -= 200 * isAlive(Players[1].AlivePieces, [12])
+  
+  Score += 9 * isAlive(Players[0].AlivePieces, [11])
+  Score -= 9 * isAlive(Players[1].AlivePieces, [11]) 
+  
+  Score += 0.5 * PawnScore(Players, 1)
+  Score -= 0.5 * PawnScore(Players[::-1], 2)
+  
+  for i in range(16):
+    if(Players[0].AlivePieces[i][1]):
+      Score += 0.1 * len(FindPossibleMoves(Players[0].Pieceplacement[i], Players[0], Players[1]))
+    if(Players[1].AlivePieces[i][1]):
+      Score -= 0.1 * len(FindPossibleMoves(Players[1].Pieceplacement[i], Players[1], Players[0]))
+  
+  if SelectedPlayer == 2:
+    Score *= -1
+  return Score
+
+    
 def DrawPossibilities(Players,SelectedField,Possibilities):
 	#print (Players,SelectedField,Possibilities)
 	screen.fill(BACKGRUNDCOLOR)
@@ -454,7 +566,7 @@ def DrawPossibilities(Players,SelectedField,Possibilities):
 				if j%2==0:
 					pygame.draw.rect(screen,FIELDCOLORS[0],pygame.Rect((i*SCREENSIZE[0]/8,j*SCREENSIZE[1]/8),(SCREENSIZE[0],SCREENSIZE[1])))
 				else:
-					pygame.draw.rect(screen,FIELDCOLORS[1],pygame.Rect((i*SCREENSIZE[0]/8,j*SCREENSIZE[1]/8),(SCREENSIZE[0],SCREENSIZE[1])))					
+					pygame.draw.rect(screen,FIELDCOLORS[1],pygame.Rect((i*SCREENSIZE[0]/8,j*SCREENSIZE[1]/8),(SCREENSIZE[0],SCREENSIZE[1])))
 		else:
 			for j in range(8):
 				if j%2==0:
@@ -486,7 +598,7 @@ def DrawBoard(Players): #Draw the chessboard
 				if j%2==0:
 					pygame.draw.rect(screen,FIELDCOLORS[0],pygame.Rect((i*SCREENSIZE[0]/8,j*SCREENSIZE[1]/8),(SCREENSIZE[0],SCREENSIZE[1])))
 				else:
-					pygame.draw.rect(screen,FIELDCOLORS[1],pygame.Rect((i*SCREENSIZE[0]/8,j*SCREENSIZE[1]/8),(SCREENSIZE[0],SCREENSIZE[1])))					
+					pygame.draw.rect(screen,FIELDCOLORS[1],pygame.Rect((i*SCREENSIZE[0]/8,j*SCREENSIZE[1]/8),(SCREENSIZE[0],SCREENSIZE[1])))
 		else:
 			for j in range(8):
 				if j%2==0:
@@ -494,8 +606,8 @@ def DrawBoard(Players): #Draw the chessboard
 				else:
 					pygame.draw.rect(screen,FIELDCOLORS[0],pygame.Rect((i*SCREENSIZE[0]/8,j*SCREENSIZE[1]/8),(SCREENSIZE[0],SCREENSIZE[1])))
 	DrawPieces(Players)
-	pygame.display.flip()	
-	
+	pygame.display.flip()
+
 def DrawPieces(Players):
 	for player in Players:
 		for i in range(16):
@@ -521,11 +633,11 @@ def DrawPieces(Players):
 					text=font.render(Name,True,(255,255,255))
 				screen.blit(text,(int(float(SCREENSIZE[0])/8*((player.Pieceplacement[i][0])+0.5)-text.get_width() / 2),int(float(SCREENSIZE[1])/8*((player.Pieceplacement[i][1])+0.5)-text.get_height() / 2)))
 	pygame.display.flip()
-	
+
 def EnterChossingLoop(Players,SelectedField,Possibilities):
 	while 1: #Loop till player have choosen.
 		for event in pygame.event.get(): #Event	quoue
-			if event.type==QUIT:																																													
+			if event.type==QUIT:
 				sys.exit()
 			elif event.type == pygame.MOUSEBUTTONDOWN:
 				if event.button==1:
@@ -542,14 +654,14 @@ def EnterChossingLoop(Players,SelectedField,Possibilities):
 								Players[0].Pieceplacement[8]=[Players[0].Pieceplacement[8][0]+3,Players[0].Pieceplacement[8][1]]
 								Players[0].AlivePieces[12][2]+=1
 								Players[0].AlivePieces[8][2]+=1
-								return 1	
+								return 1
 							if Players[0].Pieceplacement.index(PressedField)==15: #right castling
 								Players[0].Pieceplacement[12]=[Players[0].Pieceplacement[12][0]+2,Players[0].Pieceplacement[12][1]]
 								Players[0].Pieceplacement[15]=[Players[0].Pieceplacement[15][0]-2,Players[0].Pieceplacement[15][1]]
 								Players[0].AlivePieces[12][2]+=1
 								Players[0].AlivePieces[15][2]+=1
 								return 1
-											
+
 						Players[0].Pieceplacement[Piece]=PressedField
 						Players[0].AlivePieces[Piece][2]+=1 #Add 1 to number of moves
 						if Piece<8: #turn pessent into Queen if it reaces end
@@ -584,13 +696,13 @@ else:
     FONTBASIS = SCREENSIZE[0]
 font = pygame.font.SysFont(FONT, int(float(FONTBASIS)/12))
 White=Player(2)
-Black=Player(1																																																									)
+Black=Player(1)
 clock=pygame.time.Clock()
 DrawBoard([White,Black])
 Turn=1
 while 1: #Gameloop
 	for event in pygame.event.get(): #Event	quoue
-		if event.type==QUIT:																																													
+		if event.type==QUIT:
 			sys.exit()
 		elif event.type == pygame.MOUSEBUTTONDOWN:
 			if event.button==1:
@@ -600,6 +712,10 @@ while 1: #Gameloop
 					PossibleMoves=FindPossibleMoves(SelectedField,White,Black)
 					DrawPossibilities([White,Black],SelectedField,PossibleMoves)
 					if(EnterChossingLoop([White,Black],SelectedField,PossibleMoves)==1):
+						print("W: " + str(evaluate([White,Black], 1)))
+						print("")
+						print("B: " + str(evaluate([White,Black], 2)))
+						print("")
 						CheckMateState=CheckIfChessMate(Black,White)
 						if CheckMateState==1: #Check if black is Chessmate
 							print "Black Is CheckMate"
@@ -609,7 +725,7 @@ while 1: #Gameloop
 							Turn=2
 						else:
 							Turn=1
-					
+
 				elif Turn==2 and SelectedField in Black.Pieceplacement:
 					PossibleMoves=FindPossibleMoves(SelectedField,Black,White)
 					DrawPossibilities([White,Black],SelectedField,PossibleMoves)
@@ -619,16 +735,16 @@ while 1: #Gameloop
 							print "White Is CheckMate"
 						elif CheckMateState==2:
 							print "StaleMate"
-							
+
 						if Turn==1:
 							Turn=2
 						else:
 							Turn=1
-							
+
 	DrawBoard([White,Black])
-			
-	
-				
-					
-					
+
+
+
+
+
 	clock.tick(60)
