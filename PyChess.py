@@ -32,20 +32,33 @@ class Player:
 
 def CheckIfChess(Player,Opponent,FieldPair=0): #Checks if the Player is chess. If Fieldpair is provided, it will return the result for these shifted
     #Check if any moves Opponent can make will be able to kill the king
+    PieceNum_Player = []
+    OldPlacement_Player = []
+    PieceNum_Opponent = []
+    OldPlacement_Opponent = []
+    OldAlive_Opponent =[]
+
     if not FieldPair==0:
         if len(FieldPair)==2:
-            NewPlayer=copy.deepcopy(Player)
-            NewPlayer.Pieceplacement[NewPlayer.Pieceplacement.index(FieldPair[0])]=FieldPair[1]
-            NewOpponent=copy.deepcopy(Opponent)
+            PieceNum_Player.append(Player.Pieceplacement.index(FieldPair[0]))
+            OldPlacement_Player.append(copy.copy(Player.Pieceplacement[PieceNum_Player[0]]))
+            Player.Pieceplacement[copy.copy(PieceNum_Player[0])]=FieldPair[1]
         elif len(FieldPair)==4:
-            NewPlayer=copy.deepcopy(Player)
-            NewPlayer.Pieceplacement[NewPlayer.Pieceplacement.index(FieldPair[0])]=FieldPair[1]
-            NewPlayer.Pieceplacement[NewPlayer.Pieceplacement.index(FieldPair[2])]=FieldPair[3]
-            NewOpponent=copy.deepcopy(Opponent)
-        if FieldPair[1] in NewOpponent.Pieceplacement:
-            Piece=NewOpponent.Pieceplacement.index(FieldPair[1])
-            NewOpponent.Pieceplacement[Piece]=[-1,-1]
-            NewOpponent.AlivePieces[Piece][1]=0
+            PieceNum_Player.append(Player.Pieceplacement.index(FieldPair[0]))
+            PieceNum_Player.append(Player.Pieceplacement.index(FieldPair[2]))
+            OldPlacement_Player.append(copy.copy(Player.Pieceplacement[PieceNum_Player[0]]))
+            OldPlacement_Player.append(copy.copy(Player.Pieceplacement[PieceNum_Player[1]]))
+            Player.Pieceplacement[PieceNum_Player[0]]=FieldPair[1]
+            Player.Pieceplacement[PieceNum_Player[0]]=FieldPair[3]
+
+        if FieldPair[1] in Opponent.Pieceplacement:
+
+            Piece=Opponent.Pieceplacement.index(FieldPair[1])
+            PieceNum_Opponent.append(Piece)
+            OldPlacement_Opponent.append(copy.copy(Opponent.Pieceplacement[Piece]))
+            OldAlive_Opponent.append(Opponent.AlivePieces[Piece][1])
+            Opponent.Pieceplacement[Piece]=[-1,-1]
+            Opponent.AlivePieces[Piece][1]=0
     KingAlive=1
     if FieldPair==0:
         for i in range(16):
@@ -53,9 +66,16 @@ def CheckIfChess(Player,Opponent,FieldPair=0): #Checks if the Player is chess. I
                 KingAlive=0
     else:
         for i in range(16):
-            if NewPlayer.Pieceplacement[12] in FindPossibleMoves(NewOpponent.Pieceplacement[i],NewOpponent,NewPlayer,0):
+            if Player.Pieceplacement[12] in FindPossibleMoves(Opponent.Pieceplacement[i],Opponent,Player,0):
                 KingAlive=0
+
+        for i in range(len(PieceNum_Player)):
+            Player.Pieceplacement[PieceNum_Player[i]] = OldPlacement_Player[i]
+        for i in range(len(PieceNum_Opponent)):
+            Opponent.Pieceplacement[PieceNum_Opponent[i]] = OldPlacement_Opponent[i]
+            Opponent.AlivePieces[PieceNum_Opponent[i]][1] = OldAlive_Opponent[i]
     return not KingAlive
+
 def CheckIfChessMate(Player,Opponent): #Check if Player is Chessmate. Return 1 if chessmate, 2 if stalemate. else return 0
     #Check if player can move any piece
     canmove=0
@@ -103,7 +123,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1, Piece = -1): #Co
             if thePlayer.AlivePieces[Piece][1]==2: #check if transformed to queen
                 #Queenmoves
                 #Combine Runner and Tower
-                for i in zip(range(Field[0]+1,8),range(Field[1]+1,8)):
+                for i in zip(list(range(Field[0]+1,8)),list(range(Field[1]+1,8))):
                     i=[i[0],i[1]]
                     if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
                         Moves.append(i)
@@ -113,7 +133,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1, Piece = -1): #Co
                             break
                         else:
                             break
-                for i in zip(range(Field[0]-1,-1,-1),range(Field[1]+1,8)):
+                for i in zip(list(range(Field[0]-1,-1,-1)),list(range(Field[1]+1,8))):
                     i=[i[0],i[1]]
                     if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
                         Moves.append(i)
@@ -123,7 +143,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1, Piece = -1): #Co
                             break
                         else:
                             break
-                for i in zip(range(Field[0]+1,8),range(Field[1]-1,-1,-1)):
+                for i in zip(list(range(Field[0]+1,8)),list(range(Field[1]-1,-1,-1))):
                     i=[i[0],i[1]]
                     if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
                         Moves.append(i)
@@ -133,7 +153,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1, Piece = -1): #Co
                             break
                         else:
                             break
-                for i in zip(range(Field[0]-1,-1,-1),range(Field[1]-1,-1,-1)):
+                for i in zip(list(range(Field[0]-1,-1,-1)),list(range(Field[1]-1,-1,-1))):
                     i=[i[0],i[1]]
                     if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
                         Moves.append(i)
@@ -273,7 +293,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1, Piece = -1): #Co
                     Moves.append([Field[0]+i,Field[1]+j])
 
     elif Piece==10 or Piece==13: #Runner
-        for i in zip(range(Field[0]+1,8),range(Field[1]+1,8)):
+        for i in zip(list(range(Field[0]+1,8)),list(range(Field[1]+1,8))):
             i=[i[0],i[1]]
             if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
                 Moves.append(i)
@@ -283,7 +303,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1, Piece = -1): #Co
                     break
                 else:
                     break
-        for i in zip(range(Field[0]-1,-1,-1),range(Field[1]+1,8)):
+        for i in zip(list(range(Field[0]-1,-1,-1)),list(range(Field[1]+1,8))):
             i=[i[0],i[1]]
             if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
                 Moves.append(i)
@@ -293,7 +313,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1, Piece = -1): #Co
                     break
                 else:
                     break
-        for i in zip(range(Field[0]+1,8),range(Field[1]-1,-1,-1)):
+        for i in zip(list(range(Field[0]+1,8)),list(range(Field[1]-1,-1,-1))):
             i=[i[0],i[1]]
             if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
                 Moves.append(i)
@@ -303,7 +323,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1, Piece = -1): #Co
                     break
                 else:
                     break
-        for i in zip(range(Field[0]-1,-1,-1),range(Field[1]-1,-1,-1)):
+        for i in zip(list(range(Field[0]-1,-1,-1)),list(range(Field[1]-1,-1,-1))):
             i=[i[0],i[1]]
             if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
                 Moves.append(i)
@@ -316,7 +336,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1, Piece = -1): #Co
 
     elif Piece==11: #Queen
         #Combine Runner and Tower
-        for i in zip(range(Field[0]+1,8),range(Field[1]+1,8)):
+        for i in zip(list(range(Field[0]+1,8)),list(range(Field[1]+1,8))):
             i=[i[0],i[1]]
             if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
                 Moves.append(i)
@@ -326,7 +346,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1, Piece = -1): #Co
                     break
                 else:
                     break
-        for i in zip(range(Field[0]-1,-1,-1),range(Field[1]+1,8)):
+        for i in zip(list(range(Field[0]-1,-1,-1)),list(range(Field[1]+1,8))):
             i=[i[0],i[1]]
             if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
                 Moves.append(i)
@@ -336,7 +356,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1, Piece = -1): #Co
                     break
                 else:
                     break
-        for i in zip(range(Field[0]+1,8),range(Field[1]-1,-1,-1)):
+        for i in zip(list(range(Field[0]+1,8)),list(range(Field[1]-1,-1,-1))):
             i=[i[0],i[1]]
             if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
                 Moves.append(i)
@@ -346,7 +366,7 @@ def FindPossibleMoves(Field,thePlayer,theOpponent,checkchess=1, Piece = -1): #Co
                     break
                 else:
                     break
-        for i in zip(range(Field[0]-1,-1,-1),range(Field[1]-1,-1,-1)):
+        for i in zip(list(range(Field[0]-1,-1,-1)),list(range(Field[1]-1,-1,-1))):
             i=[i[0],i[1]]
             if not (i in thePlayer.Pieceplacement or i in theOpponent.Pieceplacement):
                 Moves.append(i)
@@ -759,9 +779,9 @@ def fullauto(White, Black, clk):
             if(MakeMove([White, Black], Move[1] ,White.Pieceplacement[Move[0]]) == 1):
                 CheckMateState=CheckIfChessMate(Black,White)
                 if CheckMateState==1: #Check if black is Chessmate
-                    print "Black Is CheckMate"
+                    print("Black Is CheckMate")
                 elif CheckMateState==2:
-                    print "StaleMate"
+                    print("StaleMate")
                 if Turn==1:
                     Turn=2
                 else:
@@ -772,9 +792,9 @@ def fullauto(White, Black, clk):
             if(MakeMove([Black, White], Move[1] ,Black.Pieceplacement[Move[0]]) == 1):
                 CheckMateState=CheckIfChessMate(White,Black)
                 if CheckMateState==1: #Check if White is Chessmate
-                    print "White Is CheckMate"
+                    print("White Is CheckMate")
                 elif CheckMateState==2:
-                    print "StaleMate"
+                    print("StaleMate")
 
                 if Turn==1:
                     Turn=2
@@ -801,9 +821,9 @@ def semiauto(White, Black, clk):
                             if(EnterChossingLoop([White,Black],SelectedField,PossibleMoves)==1):
                                 CheckMateState=CheckIfChessMate(Black,White)
                                 if CheckMateState==1: #Check if black is Chessmate
-                                    print "Black Is CheckMate"
+                                    print("Black Is CheckMate")
                                 elif CheckMateState==2:
-                                    print "StaleMate"
+                                    print("StaleMate")
                                 if Turn==1:
                                     Turn=2
                                 else:
@@ -814,9 +834,9 @@ def semiauto(White, Black, clk):
             if(MakeMove([Black, White], Move[1] ,Black.Pieceplacement[Move[0]]) == 1):
                 CheckMateState=CheckIfChessMate(White,Black)
                 if CheckMateState==1: #Check if White is Chessmate
-                    print "White Is CheckMate"
+                    print("White Is CheckMate")
                 elif CheckMateState==2:
-                    print "StaleMate"
+                    print("StaleMate")
 
                 if Turn==1:
                     Turn=2
@@ -842,9 +862,9 @@ def normal(White, Black, clk):
                         if(EnterChossingLoop([White,Black],SelectedField,PossibleMoves)==1):
                             CheckMateState=CheckIfChessMate(Black,White)
                             if CheckMateState==1: #Check if black is Chessmate
-                                print "Black Is CheckMate"
+                                print("Black Is CheckMate")
                             elif CheckMateState==2:
-                                print "StaleMate"
+                                print("StaleMate")
                             if Turn==1:
                                 Turn=2
                             else:
@@ -856,9 +876,9 @@ def normal(White, Black, clk):
                         if(EnterChossingLoop([Black,White],SelectedField,PossibleMoves)==1):
                             CheckMateState=CheckIfChessMate(White,Black)
                             if CheckMateState==1: #Check if White is Chessmate
-                                print "White Is CheckMate"
+                                print("White Is CheckMate")
                             elif CheckMateState==2:
-                                print "StaleMate"
+                                print("StaleMate")
 
                             if Turn==1:
                                 Turn=2
