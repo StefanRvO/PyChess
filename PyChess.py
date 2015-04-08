@@ -1007,6 +1007,6 @@ elif "-semiauto" in sys.argv:
     semiauto(White, Black, clock)
 else:
     normal(White, Black, clock)
-for event in pygame.event.get(): #Event    quoue
-    if event.type==QUIT:
-        sys.exit()
+while True:
+    DrawBoard([White,Black])
+    time.sleep(0.1)
