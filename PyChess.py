@@ -555,9 +555,9 @@ def evaluate(Players, SelectedPlayer): #first player in list should be white, ne
   return Score
 
 def GetBestMove(Players, SelectedPlayer):
+    BestMove = []
+    max = -999999
     if SelectedPlayer == 1: # White
-        BestMove = []
-        max = -999999
         for i in range(16):
             for Move in FindPossibleMoves(Players[0].Pieceplacement[i], Players[0], Players[1]):
                 OldPlacement = [copy.deepcopy(Players[0].AlivePieces), copy.deepcopy(Players[0].Pieceplacement), copy.deepcopy(Players[1].AlivePieces), copy.deepcopy(Players[1].Pieceplacement)]
@@ -747,6 +747,127 @@ def EnterChossingLoop(Players,SelectedField,Possibilities):
                         continue
                     return MakeMove(Players, PressedField, SelectedField)
 
+
+def fullauto(White, Black, clk):
+    Turn=1
+    while True:
+        for event in pygame.event.get(): #Event    quoue
+            if event.type==QUIT:
+                sys.exit()
+        if Turn == 1:
+            Move = GetBestMove([White,Black], 1)
+            if(MakeMove([White, Black], Move[1] ,White.Pieceplacement[Move[0]]) == 1):
+                CheckMateState=CheckIfChessMate(Black,White)
+                if CheckMateState==1: #Check if black is Chessmate
+                    print "Black Is CheckMate"
+                elif CheckMateState==2:
+                    print "StaleMate"
+                if Turn==1:
+                    Turn=2
+                else:
+                    Turn=1
+
+        else:
+            Move = GetBestMove([White,Black], 2)
+            if(MakeMove([Black, White], Move[1] ,Black.Pieceplacement[Move[0]]) == 1):
+                CheckMateState=CheckIfChessMate(White,Black)
+                if CheckMateState==1: #Check if White is Chessmate
+                    print "White Is CheckMate"
+                elif CheckMateState==2:
+                    print "StaleMate"
+
+                if Turn==1:
+                    Turn=2
+                else:
+                    Turn=1
+
+        DrawBoard([White,Black])
+        clk.tick(60)
+
+def semiauto(White, Black, clk):
+    Turn=1
+    while True:
+        if Turn == 1:
+            for event in pygame.event.get(): #Event    quoue
+                if event.type==QUIT:
+                    sys.exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button==1:
+                        #check if clicked field contains a piece
+                        SelectedField=[int(float(event.pos[0])/SCREENSIZE[0]*8),int(float(event.pos[1])/SCREENSIZE[1]*8)]
+                        if SelectedField in White.Pieceplacement:
+                            PossibleMoves=FindPossibleMoves(SelectedField,White,Black)
+                            DrawPossibilities([White,Black],SelectedField,PossibleMoves)
+                            if(EnterChossingLoop([White,Black],SelectedField,PossibleMoves)==1):
+                                CheckMateState=CheckIfChessMate(Black,White)
+                                if CheckMateState==1: #Check if black is Chessmate
+                                    print "Black Is CheckMate"
+                                elif CheckMateState==2:
+                                    print "StaleMate"
+                                if Turn==1:
+                                    Turn=2
+                                else:
+                                    Turn=1
+
+        else:
+            Move = GetBestMove([White,Black], 2)
+            if(MakeMove([Black, White], Move[1] ,Black.Pieceplacement[Move[0]]) == 1):
+                CheckMateState=CheckIfChessMate(White,Black)
+                if CheckMateState==1: #Check if White is Chessmate
+                    print "White Is CheckMate"
+                elif CheckMateState==2:
+                    print "StaleMate"
+
+                if Turn==1:
+                    Turn=2
+                else:
+                    Turn=1
+
+        DrawBoard([White,Black])
+        clk.tick(60)
+
+def normal(White, Black, clk):
+    Turn=1
+    while True:
+        for event in pygame.event.get(): #Event    quoue
+            if event.type==QUIT:
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button==1:
+                    #check if clicked field contains a piece
+                    SelectedField=[int(float(event.pos[0])/SCREENSIZE[0]*8),int(float(event.pos[1])/SCREENSIZE[1]*8)]
+                    if Turn==1 and SelectedField in White.Pieceplacement:
+                        PossibleMoves=FindPossibleMoves(SelectedField,White,Black)
+                        DrawPossibilities([White,Black],SelectedField,PossibleMoves)
+                        if(EnterChossingLoop([White,Black],SelectedField,PossibleMoves)==1):
+                            CheckMateState=CheckIfChessMate(Black,White)
+                            if CheckMateState==1: #Check if black is Chessmate
+                                print "Black Is CheckMate"
+                            elif CheckMateState==2:
+                                print "StaleMate"
+                            if Turn==1:
+                                Turn=2
+                            else:
+                                Turn=1
+
+                    elif Turn==2 and SelectedField in Black.Pieceplacement:
+                        PossibleMoves=FindPossibleMoves(SelectedField,Black,White)
+                        DrawPossibilities([White,Black],SelectedField,PossibleMoves)
+                        if(EnterChossingLoop([Black,White],SelectedField,PossibleMoves)==1):
+                            CheckMateState=CheckIfChessMate(White,Black)
+                            if CheckMateState==1: #Check if White is Chessmate
+                                print "White Is CheckMate"
+                            elif CheckMateState==2:
+                                print "StaleMate"
+
+                            if Turn==1:
+                                Turn=2
+                            else:
+                                Turn=1
+        DrawBoard([White,Black])
+        clk.tick(60)
+
+
 pygame.init()
 screen=pygame.display.set_mode(SCREENSIZE,0,32)
 pygame.display.set_caption("PyChess", "PyCs") #Set title
@@ -759,53 +880,9 @@ White=Player(2)
 Black=Player(1)
 clock=pygame.time.Clock()
 DrawBoard([White,Black])
-Turn=1
-while 1: #Gameloop
-    for event in pygame.event.get(): #Event    quoue
-        if event.type==QUIT:
-            sys.exit()
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button==1:
-                #check if clicked field contains a piece
-                SelectedField=[int(float(event.pos[0])/SCREENSIZE[0]*8),int(float(event.pos[1])/SCREENSIZE[1]*8)]
-                if Turn==1 and SelectedField in White.Pieceplacement:
-                    PossibleMoves=FindPossibleMoves(SelectedField,White,Black)
-                    DrawPossibilities([White,Black],SelectedField,PossibleMoves)
-                    if(EnterChossingLoop([White,Black],SelectedField,PossibleMoves)==1):
-                        print("W: " + str(evaluate([White,Black], 1)))
-                        print("")
-                        print("B: " + str(evaluate([White,Black], 2)))
-                        print("")
-                        print(GetBestMove([White,Black], 1))
-                        CheckMateState=CheckIfChessMate(Black,White)
-                        if CheckMateState==1: #Check if black is Chessmate
-                            print "Black Is CheckMate"
-                        elif CheckMateState==2:
-                            print "StaleMate"
-                        if Turn==1:
-                            Turn=2
-                        else:
-                            Turn=1
-
-                elif Turn==2 and SelectedField in Black.Pieceplacement:
-                    PossibleMoves=FindPossibleMoves(SelectedField,Black,White)
-                    DrawPossibilities([White,Black],SelectedField,PossibleMoves)
-                    if(EnterChossingLoop([Black,White],SelectedField,PossibleMoves)==1):
-                        CheckMateState=CheckIfChessMate(White,Black)
-                        if CheckMateState==1: #Check if White is Chessmate
-                            print "White Is CheckMate"
-                        elif CheckMateState==2:
-                            print "StaleMate"
-
-                        if Turn==1:
-                            Turn=2
-                        else:
-                            Turn=1
-
-    DrawBoard([White,Black])
-
-
-
-
-
-    clock.tick(60)
+if "-fullauto" in sys.argv:
+    fullauto(White, Black, clock)
+elif "-semiauto" in sys.argv:
+    semiauto(White, Black, clock)
+else:
+    normal(White, Black, clock)
