@@ -1,8 +1,12 @@
 #implement a chess game in python.
 import sys
 import pygame
+import random
+import time
 from pygame.locals import *
 import copy
+from multiprocessing import Pool
+
 
 SCREENSIZE=(600,600)
 FONT="Times New Roman"
@@ -574,35 +578,52 @@ def evaluate(Players, SelectedPlayer): #first player in list should be white, ne
     Score *= -1
   return Score
 
-def GetBestMove(Players, SelectedPlayer):
+def GetBestMovePiece(List):
+    Piece, Players, SelectedPlayer = List
     BestMove = []
     max = -999999
     if SelectedPlayer == 1: # White
-        for i in range(16):
-            for Move in FindPossibleMoves(Players[0].Pieceplacement[i], Players[0], Players[1]):
-                OldPlacement = [copy.deepcopy(Players[0].AlivePieces), copy.deepcopy(Players[0].Pieceplacement), copy.deepcopy(Players[1].AlivePieces), copy.deepcopy(Players[1].Pieceplacement)]
-                MakeMove(Players, Move, Players[0].Pieceplacement[i])
-                score = - NegaMax(Players, 2, 1)
-                Players[0].AlivePieces    = OldPlacement[0]
-                Players[0].Pieceplacement = OldPlacement[1]
-                Players[1].AlivePieces    = OldPlacement[2]
-                Players[1].Pieceplacement = OldPlacement[3]
-                if score > max:
-                    max = score
-                    BestMove = [i, Move]
+        for Move in FindPossibleMoves(Players[0].Pieceplacement[Piece], Players[0], Players[1]):
+            OldPlacement = [copy.deepcopy(Players[0].AlivePieces), copy.deepcopy(Players[0].Pieceplacement), copy.deepcopy(Players[1].AlivePieces), copy.deepcopy(Players[1].Pieceplacement)]
+            MakeMove(Players, Move, Players[0].Pieceplacement[Piece])
+            score = -NegaMax(Players, 2, 2)
+            Players[0].AlivePieces    = OldPlacement[0]
+            Players[0].Pieceplacement = OldPlacement[1]
+            Players[1].AlivePieces    = OldPlacement[2]
+            Players[1].Pieceplacement = OldPlacement[3]
+            if score > max:
+                max = score
+                BestMove = Move
     else:
-        for i in range(16):
-            for Move in FindPossibleMoves(Players[1].Pieceplacement[i], Players[1], Players[0]):
-                OldPlacement = [copy.deepcopy(Players[0].AlivePieces), copy.deepcopy(Players[0].Pieceplacement), copy.deepcopy(Players[1].AlivePieces), copy.deepcopy(Players[1].Pieceplacement)]
-                MakeMove(Players[::-1], Move, Players[1].Pieceplacement[i])
-                score = - NegaMax(Players, 1, 1)
-                Players[0].AlivePieces    = OldPlacement[0]
-                Players[0].Pieceplacement = OldPlacement[1]
-                Players[1].AlivePieces    = OldPlacement[2]
-                Players[1].Pieceplacement = OldPlacement[3]
-                if score > max:
-                    max = score
-                    BestMove = [i, Move]
+        for Move in FindPossibleMoves(Players[1].Pieceplacement[Piece], Players[1], Players[0]):
+            OldPlacement = [copy.deepcopy(Players[0].AlivePieces), copy.deepcopy(Players[0].Pieceplacement), copy.deepcopy(Players[1].AlivePieces), copy.deepcopy(Players[1].Pieceplacement)]
+            MakeMove(Players[::-1], Move, Players[1].Pieceplacement[Piece])
+            score = -NegaMax(Players, 1, 2)
+            Players[0].AlivePieces    = OldPlacement[0]
+            Players[0].Pieceplacement = OldPlacement[1]
+            Players[1].AlivePieces    = OldPlacement[2]
+            Players[1].Pieceplacement = OldPlacement[3]
+            if score > max:
+                max = score
+                BestMove = Move
+    return [Piece, max, BestMove]
+
+def GetBestMove(Players, SelectedPlayer):
+    BestMove = []
+    max = -999999
+    pool = Pool(processes = 4)
+    result = ""
+    poollist = []
+    for i in random.sample(range(16), 16):
+        poollist.append([i, copy.deepcopy(Players), SelectedPlayer])
+    result = pool.imap_unordered(GetBestMovePiece, poollist)
+    while result._index < 16:
+        print(result._index)
+        time.sleep(0.1)
+    for i in result:
+        if(i[1] > max):
+            max = i[1]
+            BestMove = [i[0], i[2]]
     return BestMove
 
 
@@ -635,6 +656,73 @@ def NegaMax(Players, SelectedPlayer, depth = 3):
                 if score > max:
                     max = score
     return max
+
+def alphaBetaMax(Players, SelectedPlayer, alpha, beta, depth = 3):
+    if depth == 0:
+        return evaluate(Players, SelectedPlayer)
+    if SelectedPlayer == 1: # White
+        for i in range(16):
+            for Move in FindPossibleMoves(Players[0].Pieceplacement[i], Players[0], Players[1]):
+                OldPlacement = [copy.deepcopy(Players[0].AlivePieces), copy.deepcopy(Players[0].Pieceplacement), copy.deepcopy(Players[1].AlivePieces), copy.deepcopy(Players[1].Pieceplacement)]
+                MakeMove(Players, Move, Players[0].Pieceplacement[i])
+                score = alphaBetaMin(Players, 2, alpha, beta, depth - 1)
+                Players[0].AlivePieces    = OldPlacement[0]
+                Players[0].Pieceplacement = OldPlacement[1]
+                Players[1].AlivePieces    = OldPlacement[2]
+                Players[1].Pieceplacement = OldPlacement[3]
+                if score >= beta:
+                    return beta
+                if score > alpha:
+                    alpha = score
+    else:
+        for i in range(16):
+            for Move in FindPossibleMoves(Players[1].Pieceplacement[i], Players[1], Players[0]):
+                OldPlacement = [copy.deepcopy(Players[0].AlivePieces), copy.deepcopy(Players[0].Pieceplacement), copy.deepcopy(Players[1].AlivePieces), copy.deepcopy(Players[1].Pieceplacement)]
+                MakeMove(Players[::-1], Move, Players[1].Pieceplacement[i])
+                score = alphaBetaMin(Players, 1, alpha, beta, depth - 1)
+                Players[0].AlivePieces    = OldPlacement[0]
+                Players[0].Pieceplacement = OldPlacement[1]
+                Players[1].AlivePieces    = OldPlacement[2]
+                Players[1].Pieceplacement = OldPlacement[3]
+                if score >= beta:
+                    return beta
+                if score > alpha:
+                    alpha = score
+    return alpha
+
+def alphaBetaMin(Players, SelectedPlayer, alpha, beta, depth = 3):
+    if depth == 0:
+        return -evaluate(Players, SelectedPlayer)
+    if SelectedPlayer == 1: # White
+        for i in range(16):
+            for Move in FindPossibleMoves(Players[0].Pieceplacement[i], Players[0], Players[1]):
+                OldPlacement = [copy.deepcopy(Players[0].AlivePieces), copy.deepcopy(Players[0].Pieceplacement), copy.deepcopy(Players[1].AlivePieces), copy.deepcopy(Players[1].Pieceplacement)]
+                MakeMove(Players, Move, Players[0].Pieceplacement[i])
+                score = alphaBetaMax(Players, 2, alpha, beta, depth - 1)
+                Players[0].AlivePieces    = OldPlacement[0]
+                Players[0].Pieceplacement = OldPlacement[1]
+                Players[1].AlivePieces    = OldPlacement[2]
+                Players[1].Pieceplacement = OldPlacement[3]
+                if score <= alpha:
+                    return alpha
+                if score < beta:
+                    beta = score
+    else:
+        for i in range(16):
+            for Move in FindPossibleMoves(Players[1].Pieceplacement[i], Players[1], Players[0]):
+                OldPlacement = [copy.deepcopy(Players[0].AlivePieces), copy.deepcopy(Players[0].Pieceplacement), copy.deepcopy(Players[1].AlivePieces), copy.deepcopy(Players[1].Pieceplacement)]
+                MakeMove(Players[::-1], Move, Players[1].Pieceplacement[i])
+                score = alphaBetaMax(Players, 1, alpha, beta, depth - 1)
+                Players[0].AlivePieces    = OldPlacement[0]
+                Players[0].Pieceplacement = OldPlacement[1]
+                Players[1].AlivePieces    = OldPlacement[2]
+                Players[1].Pieceplacement = OldPlacement[3]
+                if score <= alpha:
+                    return alpha
+                if score < beta:
+                    beta = score
+    return beta
+
 def DrawPossibilities(Players,SelectedField,Possibilities):
     #print (Players,SelectedField,Possibilities)
     screen.fill(BACKGRUNDCOLOR)
