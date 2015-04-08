@@ -586,7 +586,7 @@ def GetBestMovePiece(List):
         for Move in FindPossibleMoves(Players[0].Pieceplacement[Piece], Players[0], Players[1]):
             OldPlacement = [copy.deepcopy(Players[0].AlivePieces), copy.deepcopy(Players[0].Pieceplacement), copy.deepcopy(Players[1].AlivePieces), copy.deepcopy(Players[1].Pieceplacement)]
             MakeMove(Players, Move, Players[0].Pieceplacement[Piece])
-            score = -NegaMax(Players, 2, 2)
+            score = -NegaMax(Players, 2, 0)
             Players[0].AlivePieces    = OldPlacement[0]
             Players[0].Pieceplacement = OldPlacement[1]
             Players[1].AlivePieces    = OldPlacement[2]
@@ -598,7 +598,7 @@ def GetBestMovePiece(List):
         for Move in FindPossibleMoves(Players[1].Pieceplacement[Piece], Players[1], Players[0]):
             OldPlacement = [copy.deepcopy(Players[0].AlivePieces), copy.deepcopy(Players[0].Pieceplacement), copy.deepcopy(Players[1].AlivePieces), copy.deepcopy(Players[1].Pieceplacement)]
             MakeMove(Players[::-1], Move, Players[1].Pieceplacement[Piece])
-            score = -NegaMax(Players, 1, 2)
+            score = -NegaMax(Players, 1, 0)
             Players[0].AlivePieces    = OldPlacement[0]
             Players[0].Pieceplacement = OldPlacement[1]
             Players[1].AlivePieces    = OldPlacement[2]
@@ -624,6 +624,7 @@ def GetBestMove(Players, SelectedPlayer):
         if(i[1] > max):
             max = i[1]
             BestMove = [i[0], i[2]]
+    pool.close()
     return BestMove
 
 
