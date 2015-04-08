@@ -546,34 +546,34 @@ def evaluate(Players, SelectedPlayer): #first player in list should be white, ne
   Score = 0
   for i in range(8):
     if Players[0].AlivePieces[i][1] == 1:
-      Score += 1
+      Score += 100
     elif Players[0].AlivePieces[i][1] == 2:
-      Score += 9
+      Score += 900
     if Players[1].AlivePieces[i][1] == 1:
-      Score -= 1
+      Score -= 100
     elif Players[1].AlivePieces[i][1] == 2:
-      Score -= 1
+      Score -= 100
 
-  Score += 5 * isAlive(Players[0].AlivePieces, [8, 15])
-  Score -= 5 * isAlive(Players[1].AlivePieces, [8, 15])
+  Score += 500 * isAlive(Players[0].AlivePieces, [8, 15])
+  Score -= 500 * isAlive(Players[1].AlivePieces, [8, 15])
 
-  Score += 3 * isAlive(Players[0].AlivePieces, [9, 10, 13, 14])
-  Score -= 3 * isAlive(Players[1].AlivePieces, [9, 10, 13, 14])
+  Score += 300 * isAlive(Players[0].AlivePieces, [9, 10, 13, 14])
+  Score -= 300 * isAlive(Players[1].AlivePieces, [9, 10, 13, 14])
 
-  Score += 200 * isAlive(Players[0].AlivePieces, [12])
-  Score -= 200 * isAlive(Players[1].AlivePieces, [12])
+  Score += 20000 * isAlive(Players[0].AlivePieces, [12])
+  Score -= 20000 * isAlive(Players[1].AlivePieces, [12])
 
-  Score += 9 * isAlive(Players[0].AlivePieces, [11])
-  Score -= 9 * isAlive(Players[1].AlivePieces, [11])
+  Score += 900 * isAlive(Players[0].AlivePieces, [11])
+  Score -= 900 * isAlive(Players[1].AlivePieces, [11])
 
-  Score += 0.5 * PawnScore(Players, 1)
-  Score -= 0.5 * PawnScore(Players[::-1], 2)
+  Score += 5 * PawnScore(Players, 1)
+  Score -= 5 * PawnScore(Players[::-1], 2)
 
   for i in range(16):
     if(Players[0].AlivePieces[i][1]):
-      Score += 0.1 * len(FindPossibleMoves(Players[0].Pieceplacement[i], Players[0], Players[1]))
+      Score += 1 * len(FindPossibleMoves(Players[0].Pieceplacement[i], Players[0], Players[1]))
     if(Players[1].AlivePieces[i][1]):
-      Score -= 0.1 * len(FindPossibleMoves(Players[1].Pieceplacement[i], Players[1], Players[0]))
+      Score -= 1 * len(FindPossibleMoves(Players[1].Pieceplacement[i], Players[1], Players[0]))
   if SelectedPlayer == 2:
     Score *= -1
   return Score
@@ -586,7 +586,7 @@ def GetBestMovePiece(List):
         for Move in FindPossibleMoves(Players[0].Pieceplacement[Piece], Players[0], Players[1]):
             OldPlacement = [copy.deepcopy(Players[0].AlivePieces), copy.deepcopy(Players[0].Pieceplacement), copy.deepcopy(Players[1].AlivePieces), copy.deepcopy(Players[1].Pieceplacement)]
             MakeMove(Players, Move, Players[0].Pieceplacement[Piece])
-            score = -NegaMax(Players, 2, 0)
+            score = -NegaMax(Players, 2, 1)
             Players[0].AlivePieces    = OldPlacement[0]
             Players[0].Pieceplacement = OldPlacement[1]
             Players[1].AlivePieces    = OldPlacement[2]
@@ -598,7 +598,7 @@ def GetBestMovePiece(List):
         for Move in FindPossibleMoves(Players[1].Pieceplacement[Piece], Players[1], Players[0]):
             OldPlacement = [copy.deepcopy(Players[0].AlivePieces), copy.deepcopy(Players[0].Pieceplacement), copy.deepcopy(Players[1].AlivePieces), copy.deepcopy(Players[1].Pieceplacement)]
             MakeMove(Players[::-1], Move, Players[1].Pieceplacement[Piece])
-            score = -NegaMax(Players, 1, 0)
+            score = -NegaMax(Players, 1, 1)
             Players[0].AlivePieces    = OldPlacement[0]
             Players[0].Pieceplacement = OldPlacement[1]
             Players[1].AlivePieces    = OldPlacement[2]
@@ -869,8 +869,10 @@ def fullauto(White, Black, clk):
                 CheckMateState=CheckIfChessMate(Black,White)
                 if CheckMateState==1: #Check if black is Chessmate
                     print("Black Is CheckMate")
+                    return
                 elif CheckMateState==2:
                     print("StaleMate")
+                    return
                 if Turn==1:
                     Turn=2
                 else:
@@ -882,8 +884,10 @@ def fullauto(White, Black, clk):
                 CheckMateState=CheckIfChessMate(White,Black)
                 if CheckMateState==1: #Check if White is Chessmate
                     print("White Is CheckMate")
+                    return
                 elif CheckMateState==2:
                     print("StaleMate")
+                    return
 
                 if Turn==1:
                     Turn=2
@@ -911,8 +915,10 @@ def semiauto(White, Black, clk):
                                 CheckMateState=CheckIfChessMate(Black,White)
                                 if CheckMateState==1: #Check if black is Chessmate
                                     print("Black Is CheckMate")
+                                    return
                                 elif CheckMateState==2:
                                     print("StaleMate")
+                                    return
                                 if Turn==1:
                                     Turn=2
                                 else:
@@ -924,8 +930,10 @@ def semiauto(White, Black, clk):
                 CheckMateState=CheckIfChessMate(White,Black)
                 if CheckMateState==1: #Check if White is Chessmate
                     print("White Is CheckMate")
+                    return
                 elif CheckMateState==2:
                     print("StaleMate")
+                    return
 
                 if Turn==1:
                     Turn=2
@@ -952,8 +960,10 @@ def normal(White, Black, clk):
                             CheckMateState=CheckIfChessMate(Black,White)
                             if CheckMateState==1: #Check if black is Chessmate
                                 print("Black Is CheckMate")
+                                return
                             elif CheckMateState==2:
                                 print("StaleMate")
+                                return
                             if Turn==1:
                                 Turn=2
                             else:
@@ -966,8 +976,10 @@ def normal(White, Black, clk):
                             CheckMateState=CheckIfChessMate(White,Black)
                             if CheckMateState==1: #Check if White is Chessmate
                                 print("White Is CheckMate")
+                                return
                             elif CheckMateState==2:
                                 print("StaleMate")
+                                return
 
                             if Turn==1:
                                 Turn=2
@@ -995,3 +1007,6 @@ elif "-semiauto" in sys.argv:
     semiauto(White, Black, clock)
 else:
     normal(White, Black, clock)
+for event in pygame.event.get(): #Event    quoue
+    if event.type==QUIT:
+        sys.exit()
